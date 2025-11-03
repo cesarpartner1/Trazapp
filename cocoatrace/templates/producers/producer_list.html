@@ -1,0 +1,35 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Producers</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            All Producers
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Producer ID</th>
+                        <th>Location</th>
+                        <th>Number of Plots</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producer in producers %}
+                    <tr>
+                        <td><a href="{% url 'producer_detail' producer.pk %}">{{ producer.full_name }}</a></td>
+                        <td>{{ producer.code }}</td>
+                        <td>{{ producer.municipality }}, {{ producer.department }}</td>
+                        <td>{{ producer.plot_set.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

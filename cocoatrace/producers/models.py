@@ -1,4 +1,5 @@
-from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 
 class Producer(models.Model):
     # Identificación
@@ -20,8 +21,8 @@ class Producer(models.Model):
         choices=[('pending', 'Pendiente'), ('validated', 'Validado'), ('rejected', 'Rechazado')],
         default='pending'
     )
-    eudr_validation_date = models.DateTimeField(null=True)
-    eudr_validated_by = models.ForeignKey('infrastructure.Personnel', on_delete=models.SET_NULL, null=True)
+    eudr_validation_date = models.DateTimeField(null=True, blank=True)
+    eudr_validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     eudr_justification = models.TextField(blank=True)
 
     # Auditoría
@@ -30,14 +31,12 @@ class Producer(models.Model):
 
 class Plot(models.Model):
     producer = models.ForeignKey(Producer, on_delete=models.CASCADE)
-    plot_code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=200)
+    plot_code = models.CharField(max_length=50, unique=True)
     area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
 
-    # Geolocalización (almacenar como GeoJSON o WKT)
-    polygon_geojson = models.JSONField()  # Coordenadas del polígono
-    centroid_lat = models.DecimalField(max_digits=10, decimal_places=7)
-    centroid_lon = models.DecimalField(max_digits=10, decimal_places=7)
+    # Geolocalización
+    polygon = models.PolygonField(null=True, blank=True)
 
     # Estado (hereda del productor pero puede tener validación adicional)
     is_active = models.BooleanField(default=True)
