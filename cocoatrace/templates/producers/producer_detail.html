@@ -1,0 +1,47 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">{{ producer.full_name }}</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user me-1"></i>
+            Producer Details
+        </div>
+        <div class="card-body">
+            <p><strong>Producer ID:</strong> {{ producer.code }}</p>
+            <p><strong>Location:</strong> {{ producer.municipality }}, {{ producer.department }}</p>
+            <p><strong>Email:</strong> {{ producer.email }}</p>
+            <p><strong>Phone:</strong> {{ producer.phone }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-map-marker-alt me-1"></i>
+            Farm Plots
+            <a href="{% url 'add_plot' producer.pk %}" class="btn btn-primary btn-sm float-end">Add New Plot</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Plot Name</th>
+                        <th>Plot ID</th>
+                        <th>Area (Hectares)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plot in plots %}
+                    <tr>
+                        <td>{{ plot.name }}</td>
+                        <td>{{ plot.plot_code }}</td>
+                        <td>{{ plot.area_hectares }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
