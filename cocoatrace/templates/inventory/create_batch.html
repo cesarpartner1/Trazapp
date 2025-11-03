@@ -1,0 +1,83 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Create a New Cocoa Batch</h1>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-plus-circle me-1"></i>
+            Batch Details
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_producer" class="form-label">Producer</label>
+                    <select name="producer" id="id_producer" class="form-select" required>
+                        <option value="">Select a Producer</option>
+                        {% for producer in producers %}
+                        <option value="{{ producer.pk }}">{{ producer.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_plot" class="form-label">Plot of Origin</label>
+                    <select name="plot" id="id_plot" class="form-select" required>
+                        <option value="">Select a plot</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_batch_id" class="form-label">Batch ID</label>
+                    <input type="text" name="batch_id" id="id_batch_id" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_quantity" class="form-label">Quantity (kg)</label>
+                    <input type="number" step="0.01" name="quantity" id="id_quantity" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_warehouse_location" class="form-label">Warehouse Location</label>
+                    <select name="warehouse_location" id="id_warehouse_location" class="form-select">
+                        <option value="">Select a warehouse</option>
+                        {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.pk }}">{{ warehouse.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="id_eudr_compliance_status" class="form-label">EUDR Compliance Status</label>
+                    <select name="eudr_compliance_status" id="id_eudr_compliance_status" class="form-select" required>
+                        <option value="pending">Pending</option>
+                        <option value="compliant">Compliant</option>
+                        <option value="non_compliant">Non-Compliant</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Batch</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('id_producer').addEventListener('change', function () {
+        var producerId = this.value;
+        var plotSelect = document.getElementById('id_plot');
+        plotSelect.innerHTML = '<option value="">Loading plots...</option>';
+
+        if (producerId) {
+            fetch(`/ajax/get_producer_plots/?producer_id=${producerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    plotSelect.innerHTML = '<option value="">Select a plot</option>';
+                    data.forEach(plot => {
+                        var option = document.createElement('option');
+                        option.value = plot.id;
+                        option.textContent = plot.name;
+                        plotSelect.appendChild(option);
+                    });
+                });
+        } else {
+            plotSelect.innerHTML = '<option value="">Select a plot</option>';
+        }
+    });
+</script>
+{% endblock %}

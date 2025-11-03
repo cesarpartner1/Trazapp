@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 class Producer(models.Model):
     # Identificación
@@ -22,7 +22,7 @@ class Producer(models.Model):
         default='pending'
     )
     eudr_validation_date = models.DateTimeField(null=True, blank=True)
-    eudr_validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    eudr_validated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     eudr_justification = models.TextField(blank=True)
 
     # Auditoría
