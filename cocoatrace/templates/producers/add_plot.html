@@ -1,25 +1,38 @@
 {% extends 'dashboard/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container-fluid">
     <h1 class="mt-4">Add a New Plot for {{ producer.full_name }}</h1>
+
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-map-marked-alt me-1"></i>
-            Draw Plot Boundaries
+            Step 1: Draw Plot Boundaries
         </div>
         <div class="card-body">
-            <div id="map" style="height: 500px;"></div>
+            <div id="map" style="height: 500px; border-radius: var(--border-radius);"></div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-info-circle me-1"></i>
+            Step 2: Enter Plot Details
+        </div>
+        <div class="card-body">
             <form method="post" class="mt-3">
                 {% csrf_token %}
                 <input type="hidden" name="polygon" id="id_polygon">
-                <div class="mb-3">
-                    <label for="id_name" class="form-label">Plot Name</label>
-                    <input type="text" name="name" id="id_name" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="id_plot_code" class="form-label">Plot ID</label>
-                    <input type="text" name="plot_code" id="id_plot_code" class="form-control" required>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id_name" class="form-label">Plot Name</label>
+                        <input type="text" name="name" id="id_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_plot_code" class="form-label">Plot ID</label>
+                        <input type="text" name="plot_code" id="id_plot_code" class="form-control" required>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="id_area_hectares" class="form-label">Area (Hectares)</label>
@@ -62,6 +75,7 @@
 
     map.on(L.Draw.Event.CREATED, function (event) {
         var layer = event.layer;
+        drawnItems.clearLayers();
         drawnItems.addLayer(layer);
         var geojson = layer.toGeoJSON();
         document.getElementById('id_polygon').value = JSON.stringify(geojson.geometry);

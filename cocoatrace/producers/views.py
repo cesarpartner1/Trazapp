@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.gis.geos import GEOSGeometry
-from .models import Producer, Plot
+from .models import Producer, Plot, Document
 import json
 
 def producer_list(request):
@@ -10,6 +9,15 @@ def producer_list(request):
 def producer_detail(request, pk):
     producer = get_object_or_404(Producer, pk=pk)
     plots = Plot.objects.filter(producer=producer)
+
+    if request.method == 'POST':
+        Document.objects.create(
+            producer=producer,
+            name=request.POST.get('name'),
+            file=request.FILES.get('file')
+        )
+        return redirect('producer_detail', pk=pk)
+
     return render(request, 'producers/producer_detail.html', {'producer': producer, 'plots': plots})
 
 def add_plot(request, producer_pk):
@@ -18,13 +26,12 @@ def add_plot(request, producer_pk):
         polygon_str = request.POST.get('polygon')
         if polygon_str:
             polygon_data = json.loads(polygon_str)
-            polygon = GEOSGeometry(json.dumps(polygon_data))
             Plot.objects.create(
                 producer=producer,
                 name=request.POST.get('name'),
                 plot_code=request.POST.get('plot_code'),
                 area_hectares=request.POST.get('area_hectares'),
-                polygon=polygon
+                polygon=polygon_data
             )
             return redirect('producer_detail', pk=producer_pk)
     return render(request, 'producers/add_plot.html', {'producer': producer})

@@ -1,0 +1,85 @@
+:root {
+  --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-family-mono: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  --border-radius: 0.5rem;
+  --border-width: 1px;
+}
+
+[data-theme="light"] {
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-accent: #0070f3;
+  --background-primary: #ffffff;
+  --background-secondary: #f3f4f6;
+  --border-color: #e5e7eb;
+  --card-background: #ffffff;
+  --card-border: #e5e7eb;
+  --button-background: #0070f3;
+  --button-text: #ffffff;
+  --button-hover-background: #0056b3;
+}
+
+[data-theme="dark"] {
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-accent: #38bdf8;
+  --background-primary: #111827;
+  --background-secondary: #1f2937;
+  --border-color: #374151;
+  --card-background: #1f2937;
+  --card-border: #374151;
+  --button-background: #38bdf8;
+  --button-text: #111827;
+  --button-hover-background: #0ea5e9;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.container-fluid {
+    padding: var(--spacing-lg);
+}
+
+.card {
+    background-color: var(--card-background);
+    border: var(--border-width) solid var(--card-border);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-lg);
+}
+
+.card-header {
+    padding: var(--spacing-md);
+    border-bottom: var(--border-width) solid var(--card-border);
+    background-color: var(--background-secondary);
+}
+
+.card-body {
+    padding: var(--spacing-md);
+}
+
+.btn-primary {
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--button-hover-background);
+}
