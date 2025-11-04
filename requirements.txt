@@ -1,0 +1,10 @@
+asgiref==3.10.0
+Django==5.2.7
+greenlet==3.2.4
+mssql-django==1.6
+playwright==1.55.0
+pyee==13.0.0
+pyodbc==5.1.0
+pytz==2025.2
+sqlparse==0.5.3
+typing_extensions==4.15.0

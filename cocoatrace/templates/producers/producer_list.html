@@ -1,0 +1,76 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4">Producers</h1>
+        <a href="#" class="btn btn-primary">Add New Producer</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                All Producers
+            </div>
+            <div class="w-50">
+                <input type="text" id="producer-search" class="form-control" placeholder="Search producers...">
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Producer ID</th>
+                        <th>Location</th>
+                        <th>Compliance Status</th>
+                        <th>Number of Plots</th>
+                    </tr>
+                </thead>
+                <tbody id="producer-table-body">
+                    {% for producer in producers %}
+                    <tr class="producer-row" data-name="{{ producer.full_name|lower }}" data-code="{{ producer.code|lower }}">
+                        <td><a href="{% url 'producer_detail' producer.pk %}">{{ producer.full_name }}</a></td>
+                        <td>{{ producer.code }}</td>
+                        <td>{{ producer.municipality }}, {{ producer.department }}</td>
+                        <td>
+                            <span class="badge
+                                {% if producer.compliance_status == 'Approved' %}bg-success
+                                {% elif producer.compliance_status == 'Pending Review' %}bg-warning text-dark
+                                {% elif producer.compliance_status == 'Rejected' %}bg-danger
+                                {% endif %}">
+                                {{ producer.compliance_status }}
+                            </span>
+                        </td>
+                        <td>{{ producer.plot_set.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('producer-search');
+    const tableBody = document.getElementById('producer-table-body');
+    const rows = tableBody.getElementsByClassName('producer-row');
+
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = searchInput.value.toLowerCase();
+        for (let row of rows) {
+            const name = row.getAttribute('data-name');
+            const code = row.getAttribute('data-code');
+            if (name.includes(searchTerm) || code.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
