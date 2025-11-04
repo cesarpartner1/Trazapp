@@ -3,74 +3,106 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mt-4">Producers</h1>
-        <a href="#" class="btn btn-primary">Add New Producer</a>
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">Producer Registry</p>
+            <h1 class="page-title">Supply Network</h1>
+            <p class="page-helper">Search, filter, and manage all upstream suppliers enrolled in your EUDR program.</p>
+        </div>
+        <a href="{% url 'create_producer' %}" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus me-2"></i>New Producer
+        </a>
     </div>
 
     <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div>
-                <i class="fas fa-table me-1"></i>
-                All Producers
+        <div class="card-body gap-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+            <div class="filter-group flex-grow-1">
+                <label class="form-label" for="producer-search">Quick Search</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="producer-search" class="form-control" placeholder="Search by name, code, municipality...">
+                </div>
             </div>
-            <div class="w-50">
-                <input type="text" id="producer-search" class="form-control" placeholder="Search producers...">
+            <div class="filter-group">
+                <label class="form-label" for="compliance-filter">Compliance</label>
+                <select id="compliance-filter" class="form-select">
+                    <option value="">All statuses</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Pending Review">Pending review</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
             </div>
         </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Producer ID</th>
-                        <th>Location</th>
-                        <th>Compliance Status</th>
-                        <th>Number of Plots</th>
-                    </tr>
-                </thead>
-                <tbody id="producer-table-body">
-                    {% for producer in producers %}
-                    <tr class="producer-row" data-name="{{ producer.full_name|lower }}" data-code="{{ producer.code|lower }}">
-                        <td><a href="{% url 'producer_detail' producer.pk %}">{{ producer.full_name }}</a></td>
-                        <td>{{ producer.code }}</td>
-                        <td>{{ producer.municipality }}, {{ producer.department }}</td>
-                        <td>
-                            <span class="badge
-                                {% if producer.compliance_status == 'Approved' %}bg-success
-                                {% elif producer.compliance_status == 'Pending Review' %}bg-warning text-dark
-                                {% elif producer.compliance_status == 'Rejected' %}bg-danger
-                                {% endif %}">
-                                {{ producer.compliance_status }}
-                            </span>
-                        </td>
-                        <td>{{ producer.plot_set.count }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producer</th>
+                            <th scope="col">Producer ID</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Plots</th>
+                            <th scope="col">Compliance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="producer-table-body">
+                        {% for producer in producers %}
+                        <tr class="producer-row"
+                            data-name="{{ producer.full_name|lower }}"
+                            data-code="{{ producer.code|lower }}"
+                            data-location="{{ producer.municipality|lower }} {{ producer.department|lower }}"
+                            data-compliance="{{ producer.compliance_status }}">
+                            <td>
+                                <a class="table-link" href="{% url 'producer_detail' producer.pk %}">{{ producer.full_name }}</a>
+                                <div class="table-meta">{{ producer.phone }} · {{ producer.email }}</div>
+                            </td>
+                            <td><code>{{ producer.code }}</code></td>
+                            <td>{{ producer.municipality }}, {{ producer.department }}</td>
+                            <td>{{ producer.plot_set.count }}</td>
+                            <td>
+                                <span class="status-chip status-{{ producer.compliance_status|slugify }}">{{ producer.compliance_status }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-secondary">No producers found. Begin by creating a new producer profile.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('producer-search');
-    const tableBody = document.getElementById('producer-table-body');
-    const rows = tableBody.getElementsByClassName('producer-row');
+    const complianceFilter = document.getElementById('compliance-filter');
+    const rows = Array.from(document.querySelectorAll('#producer-table-body .producer-row'));
 
-    searchInput.addEventListener('keyup', function() {
-        const searchTerm = searchInput.value.toLowerCase();
-        for (let row of rows) {
-            const name = row.getAttribute('data-name');
-            const code = row.getAttribute('data-code');
-            if (name.includes(searchTerm) || code.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        }
-    });
+    function filterRows() {
+        const term = searchInput.value.trim().toLowerCase();
+        const compliance = complianceFilter.value;
+
+        rows.forEach(row => {
+            const matchesSearch = !term || [
+                row.dataset.name,
+                row.dataset.code,
+                row.dataset.location
+            ].some(value => value.includes(term));
+
+            const matchesCompliance = !compliance || row.dataset.compliance === compliance;
+
+            row.style.display = matchesSearch && matchesCompliance ? '' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterRows);
+    complianceFilter.addEventListener('change', filterRows);
 });
 </script>
 {% endblock %}

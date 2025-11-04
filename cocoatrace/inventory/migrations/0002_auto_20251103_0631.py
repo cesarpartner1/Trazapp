@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('producers', '0003_auto_20251103_0630'),
+        ('producers', '0002_remove_producer_eudr_justification_and_more'),
         ('infrastructure', '0001_initial'),
         ('inventory', '0001_initial'),
     ]
@@ -51,6 +51,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='batch',
+            name='eudr_compliance_status',
+            field=models.CharField(choices=[('compliant', 'Compliant'), ('pending', 'Pending'), ('non_compliant', 'Non-Compliant')], default='pending', max_length=20),
+            preserve_default=False,
+        ),
+        migrations.AddField(
+            model_name='batch',
             name='plot',
             field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, to='producers.plot'),
             preserve_default=False,
@@ -71,11 +77,6 @@ class Migration(migrations.Migration):
             model_name='batch',
             name='warehouse_location',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='infrastructure.warehouse'),
-        ),
-        migrations.AlterField(
-            model_name='batch',
-            name='eudr_compliance_status',
-            field=models.CharField(choices=[('compliant', 'Compliant'), ('pending', 'Pending'), ('non_compliant', 'Non-Compliant')], default='pending', max_length=20),
         ),
         migrations.DeleteModel(
             name='Movement',

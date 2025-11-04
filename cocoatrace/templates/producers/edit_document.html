@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">{{ producer.code }}</p>
+            <h1 class="page-title">Edit Document</h1>
+            <p class="page-helper">Update the document metadata or upload a replacement file.</p>
+        </div>
+        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+        <strong>Fix the issues below:</strong>
+        <ul class="mb-0">
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="card">
+        {% csrf_token %}
+        <div class="card-header">
+            <span class="step-indicator">1</span>
+            Document details
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="id_name">Document name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="id_file">Replace file (optional)</label>
+                    {{ form.file }}
+                    <p class="table-meta mt-2 mb-0">Current file: <a href="{{ document.file.url }}" target="_blank">{{ document.file.name }}</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

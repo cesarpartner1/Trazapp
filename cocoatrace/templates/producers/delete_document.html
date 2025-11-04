@@ -1,0 +1,29 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">{{ producer.code }}</p>
+            <h1 class="page-title">Delete Document</h1>
+            <p class="page-helper">This action cannot be undone. The file will be removed from the producer profile.</p>
+        </div>
+        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <p>Are you sure you want to delete <strong>{{ document.name }}</strong>?</p>
+            <p class="table-meta">File: {{ document.file.name }}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Keep Document</a>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

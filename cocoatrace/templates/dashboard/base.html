@@ -9,36 +9,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Trazapp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'producer_list' %}">Producers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'batch_list' %}">Inventory</a>
-                    </li>
-                </ul>
-            </div>
+<body class="app-shell">
+    <header class="app-shell__topbar">
+        <div class="topbar-left">
+            <a class="brand" href="{% url 'dashboard' %}">Trazapp</a>
+            <nav class="topbar-nav">
+                <a class="topbar-link" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="topbar-link" href="{% url 'producer_list' %}">Producers</a>
+                <a class="topbar-link" href="{% url 'batch_list' %}">Inventory</a>
+                <a class="topbar-link" href="{% url 'warehouse_list' %}">Warehouses</a>
+            </nav>
         </div>
-    </nav>
+        <div class="topbar-actions">
+            <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle theme">
+                <i data-theme-icon class="fa-solid fa-sun"></i>
+                <span data-theme-label>Light</span>
+            </button>
+        </div>
+    </header>
 
-    <div class="container mt-4">
+    <main class="app-shell__content">
+        {% if messages %}
+        <div class="container-fluid mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 
-    <footer class="bg-dark text-white text-center p-3 mt-4">
-        <p>&copy; 2023 Trazapp. All rights reserved.</p>
+    <footer class="app-shell__footer">
+        <p>&copy; 2025 Trazapp. All rights reserved.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

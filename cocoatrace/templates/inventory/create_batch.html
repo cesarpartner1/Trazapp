@@ -35,7 +35,10 @@
                     <input type="number" step="0.01" name="quantity" id="id_quantity" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label for="id_warehouse_location" class="form-label">Warehouse Location</label>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="id_warehouse_location" class="form-label mb-0">Warehouse Location</label>
+                        <a href="{% url 'warehouse_create' %}" class="table-meta">Add warehouse</a>
+                    </div>
                     <select name="warehouse_location" id="id_warehouse_location" class="form-select">
                         <option value="">Select a warehouse</option>
                         {% for warehouse in warehouses %}

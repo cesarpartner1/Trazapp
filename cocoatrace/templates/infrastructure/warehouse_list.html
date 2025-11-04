@@ -1,0 +1,64 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">Logistics Network</p>
+            <h1 class="page-title">Warehouses</h1>
+            <p class="page-helper">Manage storage hubs connected to producers and batches for full EUDR traceability.</p>
+        </div>
+        <a href="{% url 'warehouse_create' %}" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-2"></i>Add Warehouse
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-solid fa-warehouse me-2"></i>
+                Active warehouses
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Code</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Capacity (kg)</th>
+                            <th scope="col">Current Stock</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for warehouse in warehouses %}
+                        <tr>
+                            <td><code>{{ warehouse.code }}</code></td>
+                            <td>{{ warehouse.name }}</td>
+                            <td>{{ warehouse.municipality }}</td>
+                            <td>{{ warehouse.capacity_kg }}</td>
+                            <td>{{ warehouse.current_stock_kg }}</td>
+                            <td>
+                                {% if warehouse.is_active %}
+                                <span class="status-chip status-approved">Active</span>
+                                {% else %}
+                                <span class="status-chip status-rejected">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-secondary">No warehouses registered yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

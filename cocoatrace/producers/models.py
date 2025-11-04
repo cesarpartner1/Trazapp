@@ -1,7 +1,77 @@
 from django.db import models
-from django.conf import settings
 from django.core.exceptions import ValidationError
-import json
+
+
+def _ensure_closed_ring(ring):
+    if not ring:
+        return ring
+    first = ring[0]
+    last = ring[-1]
+    if first[0] == last[0] and first[1] == last[1]:
+        return ring
+    return ring + [first]
+
+
+def _ring_centroid(ring):
+    closed = _ensure_closed_ring(ring)
+    if len(closed) < 4:  # minimum three vertices + closing point
+        xs = [point[0] for point in closed]
+        ys = [point[1] for point in closed]
+        if not xs or not ys:
+            return None, None, 0
+        return sum(xs) / len(xs), sum(ys) / len(ys), 0
+
+    twice_area = 0
+    cx = 0
+    cy = 0
+    for idx in range(len(closed) - 1):
+        x0, y0 = closed[idx]
+        x1, y1 = closed[idx + 1]
+        cross = (x0 * y1) - (x1 * y0)
+        twice_area += cross
+        cx += (x0 + x1) * cross
+        cy += (y0 + y1) * cross
+
+    if twice_area == 0:
+        xs = [point[0] for point in closed[:-1]]
+        ys = [point[1] for point in closed[:-1]]
+        return sum(xs) / len(xs), sum(ys) / len(ys), 0
+
+    area = twice_area / 2.0
+    return cx / (3 * twice_area), cy / (3 * twice_area), abs(area)
+
+
+def compute_centroid(geometry):
+    geom_type = geometry.get("type")
+    coordinates = geometry.get("coordinates")
+
+    if geom_type == "Polygon":
+        lon, lat, area = _ring_centroid(coordinates[0])
+        if lon is None or lat is None:
+            return None
+        return lat, lon
+
+    if geom_type == "MultiPolygon":
+        total_area = 0
+        sum_lat = 0
+        sum_lon = 0
+        for polygon in coordinates:
+            lon, lat, area = _ring_centroid(polygon[0])
+            if lon is None or lat is None:
+                continue
+            total_area += area
+            sum_lat += lat * area
+            sum_lon += lon * area
+        if total_area:
+            return sum_lat / total_area, sum_lon / total_area
+        # fall back to first polygon centroid if areas cancel out
+        if coordinates:
+            lon, lat, _ = _ring_centroid(coordinates[0][0])
+            if lon is not None and lat is not None:
+                return lat, lon
+        return None
+
+    return None
 
 def validate_geojson(value):
     """
@@ -71,10 +141,26 @@ class Plot(models.Model):
     area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Geolocalización
-    polygon = models.JSONField(validators=[validate_geojson], null=True, blank=True)
+    polygon = models.JSONField(
+        validators=[validate_geojson],
+        null=True,
+        blank=True,
+        db_column="polygon_geojson",
+    )
+    centroid_lat = models.FloatField(default=0)
+    centroid_lng = models.FloatField(default=0, db_column="centroid_lon")
 
     # Estado (hereda del productor pero puede tener validación adicional)
     is_active = models.BooleanField(default=True)
     eudr_compliant = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        centroid = compute_centroid(self.polygon) if self.polygon else None
+        if centroid:
+            self.centroid_lat, self.centroid_lng = centroid
+        else:
+            self.centroid_lat = self.centroid_lat or 0
+            self.centroid_lng = self.centroid_lng or 0
+        super().save(*args, **kwargs)

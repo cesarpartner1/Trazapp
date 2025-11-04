@@ -16,19 +16,54 @@
     document.documentElement.setAttribute('data-theme', theme);
   };
 
-  setTheme(getPreferredTheme());
+  const applyTheme = (theme) => {
+    setTheme(theme);
+    setStoredTheme(theme);
+  };
+
+  const refreshToggleButton = (theme) => {
+    const toggle = document.querySelector('[data-theme-toggle]');
+    if (!toggle) {
+      return;
+    }
+    toggle.setAttribute('data-theme-current', theme);
+    const icon = toggle.querySelector('[data-theme-icon]');
+    if (icon) {
+      icon.className = theme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    }
+    const label = toggle.querySelector('[data-theme-label]');
+    if (label) {
+      label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+    }
+  };
+
+  const initTheme = () => {
+    const theme = getPreferredTheme();
+    setTheme(theme);
+    refreshToggleButton(theme);
+  };
 
   window.addEventListener('DOMContentLoaded', () => {
-    const themeToggler = document.createElement('button');
-    themeToggler.classList.add('btn', 'btn-primary', 'position-fixed', 'bottom-0', 'end-0', 'm-3');
-    themeToggler.textContent = 'Toggle Theme';
-    document.body.appendChild(themeToggler);
+    initTheme();
 
-    themeToggler.addEventListener('click', () => {
-      const currentTheme = getStoredTheme() || getPreferredTheme();
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      setStoredTheme(newTheme);
-      setTheme(newTheme);
-    });
+    const toggle = document.querySelector('[data-theme-toggle]');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const currentTheme = getStoredTheme() || getPreferredTheme();
+        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(nextTheme);
+        refreshToggleButton(nextTheme);
+      });
+    }
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    const storedTheme = getStoredTheme();
+    if (storedTheme) {
+      return;
+    }
+    const theme = event.matches ? 'dark' : 'light';
+    setTheme(theme);
+    refreshToggleButton(theme);
   });
 })();
