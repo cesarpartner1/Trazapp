@@ -1,5 +1,37 @@
-from django.contrib.gis.db import models
+from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
+import json
+
+def validate_geojson(value):
+    """
+    Validator to ensure the JSONField contains valid GeoJSON.
+    """
+    try:
+        if not isinstance(value, dict):
+            raise ValidationError("Invalid GeoJSON: must be a dictionary.")
+
+        geom_type = value.get("type")
+        coordinates = value.get("coordinates")
+
+        if not geom_type or not coordinates:
+            raise ValidationError("Invalid GeoJSON: 'type' and 'coordinates' are required.")
+
+        if geom_type not in ["Polygon", "MultiPolygon"]:
+             raise ValidationError("Invalid GeoJSON type: must be 'Polygon' or 'MultiPolygon'.")
+
+        if not isinstance(coordinates, list):
+            raise ValidationError("Invalid GeoJSON: 'coordinates' must be a list.")
+
+        if geom_type == "Polygon":
+            if not all(isinstance(ring, list) for ring in coordinates):
+                raise ValidationError("Invalid Polygon: coordinates must be a list of rings.")
+            if not all(isinstance(point, list) and len(point) >= 2 for ring in coordinates for point in ring):
+                 raise ValidationError("Invalid Polygon: each ring must be a list of points (lists of numbers).")
+
+    except (ValueError, TypeError):
+        raise ValidationError("Invalid GeoJSON format.")
+
 
 class Producer(models.Model):
     # Identificación
@@ -36,7 +68,7 @@ class Plot(models.Model):
     area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Geolocalización
-    polygon = models.PolygonField(null=True, blank=True)
+    polygon = models.JSONField(validators=[validate_geojson], null=True, blank=True)
 
     # Estado (hereda del productor pero puede tener validación adicional)
     is_active = models.BooleanField(default=True)
