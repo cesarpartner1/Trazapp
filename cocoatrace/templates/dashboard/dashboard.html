@@ -2,73 +2,197 @@
 
 {% block content %}
 <div class="container-fluid">
-    <h1 class="mt-4">Dashboard</h1>
-    <div class="row">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body">Total Producers</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">EUDR Command Center</p>
+            <h1 class="page-title">Traceability Overview</h1>
+            <p class="page-helper">Monitor producer compliance, plot onboarding, inventory movements, and warehouse utilisation in real time.</p>
+        </div>
+        <a href="{% url 'producer_list' %}" class="btn btn-primary"><i class="fa-solid fa-user-plus me-2"></i>New Producer</a>
+    </div>
+
+    <div class="overview-grid">
+        {% for metric in metrics %}
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title text-uppercase">{{ metric.label }}</p>
+                <p class="metric-value">{{ metric.value }}</p>
+                <p class="table-meta">{{ metric.subtext }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card-flow">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-shield-check me-2"></i>
+                    Producer Compliance Distribution
+                </div>
+                <span class="table-meta">Active plots: {{ active_plots }} &middot; Compliant plots: {{ compliant_plots }}</span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column gap-3">
+                    {% for item in compliance_distribution %}
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="status-chip {{ item.status_class }}">{{ item.label }}</span>
+                            <span class="table-meta">{{ item.count }} &middot; {{ item.percent }}%</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+                            <div class="progress-bar" style="width: {{ item.percent }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body">Total Inventory</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-boxes-stacked me-2"></i>
+                    Batch Compliance Snapshot
                 </div>
+                <span class="table-meta">{{ warehouse_utilisation }}% warehouse utilisation</span>
             </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white mb-4">
-                <div class="card-body">Compliance Status</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-danger text-white mb-4">
-                <div class="card-body">Alerts</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            <div class="card-body">
+                <div class="d-flex flex-column gap-3">
+                    {% for item in batch_status_summary %}
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="table-link">{{ item.label }}</span>
+                            <span class="table-meta">{{ item.count }} &middot; {{ item.percent }}%</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+                            <div class="progress-bar" style="background-color: {{ item.color }}; width: {{ item.percent }}%;"></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-secondary mb-0">No batches registered yet.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Recent Activity
+
+    <div class="card-flow">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-warehouse me-2"></i>
+                    Warehouse Utilisation
+                </div>
+                <span class="table-meta">{{ current_stock }} kg of {{ total_capacity }} kg</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Warehouse</th>
+                                <th scope="col">Municipality</th>
+                                <th scope="col">Capacity (kg)</th>
+                                <th scope="col">Current Stock (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for warehouse in top_warehouses %}
+                            <tr>
+                                <td>{{ warehouse.name }}</td>
+                                <td>{{ warehouse.municipality }}</td>
+                                <td>{{ warehouse.capacity_kg }}</td>
+                                <td>{{ warehouse.current_stock_kg }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-secondary">No warehouses registered yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>User</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2023-10-27</td>
-                        <td>Admin</td>
-                        <td>New producer added</td>
-                    </tr>
-                    <tr>
-                        <td>2023-10-26</td>
-                        <td>User1</td>
-                        <td>Inventory updated</td>
-                    </tr>
-                </tbody>
-            </table>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                    Recent Activity
+                </div>
+                <span class="table-meta">Latest updates across producers, plots, and batches</span>
+            </div>
+            <div class="card-body">
+                {% if recent_activity %}
+                <ul class="list-unstyled timeline mb-0">
+                    {% for event in recent_activity %}
+                    <li class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ event.title }}</strong>
+                                <span class="table-meta">{{ event.timestamp|date:"M d, Y H:i" }}</span>
+                            </div>
+                            <p class="table-meta mb-0">{{ event.meta }} &middot; {{ event.category }}</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-secondary mb-0">No recent activity recorded.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--button-background);
+    border: 2px solid var(--background-primary);
+    top: 4px;
+}
+
+.timeline-content {
+    margin-left: 1.5rem;
+}
+
+.progress {
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--button-background);
+    height: 100%;
+}
+</style>
 {% endblock %}
