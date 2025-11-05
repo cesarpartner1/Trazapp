@@ -32,6 +32,7 @@
                             <th scope="col">Capacidad (kg)</th>
                             <th scope="col">Existencia</th>
                             <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,10 +50,13 @@
                                 <span class="status-chip status-rejected">Inactivo</span>
                                 {% endif %}
                             </td>
+                            <td class="text-end">
+                                <a href="{% url 'warehouse_update' warehouse.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-secondary">Aún no hay almacenes registrados.</td>
+                            <td colspan="7" class="text-center py-4 text-secondary">Aún no hay almacenes registrados.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

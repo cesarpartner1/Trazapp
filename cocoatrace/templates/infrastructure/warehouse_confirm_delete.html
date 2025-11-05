@@ -1,0 +1,28 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">{{ warehouse.code }}</p>
+            <h1 class="page-title">Eliminar almacén</h1>
+            <p class="page-helper">Esta acción no se puede deshacer. El almacén se eliminará de la red logística.</p>
+        </div>
+        <a href="{% url 'warehouse_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <p>¿Seguro que deseas eliminar el almacén <strong>{{ warehouse.name }}</strong> localizado en {{ warehouse.municipality }}?</p>
+            <p class="table-meta mb-0">Inventario registrado: {{ warehouse.current_stock_kg }} kg</p>
+        </div>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <a href="{% url 'warehouse_list' %}" class="btn btn-outline-secondary">Conservar almacén</a>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

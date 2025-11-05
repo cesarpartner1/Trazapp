@@ -5,11 +5,11 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Red logística</p>
-            <h1 class="page-title">Nuevo almacén</h1>
-            <p class="page-helper">Registra un centro de acopio para habilitar el enrutamiento de lotes y los reportes de cumplimiento.</p>
+            <p class="page-subtitle">{{ page_subtitle|default:'Red logística' }}</p>
+            <h1 class="page-title">{{ page_title|default:'Almacén' }}</h1>
+            <p class="page-helper">{{ page_helper|default:'Gestiona los datos del centro de acopio.' }}</p>
         </div>
-        <a href="{% url 'warehouse_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+    <a href="{% url cancel_url %}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 
     {% if form.errors %}
@@ -88,8 +88,13 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Guardar almacén</button>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <div>
+                    {% if is_edit %}
+                    <a href="{% url 'warehouse_delete' warehouse.pk %}" class="btn btn-outline-danger">Eliminar almacén</a>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">{{ submit_label|default:'Guardar' }}</button>
             </div>
         </div>
     </form>

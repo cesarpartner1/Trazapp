@@ -25,6 +25,7 @@
                             <th scope="col">Cantidad (kg)</th>
                             <th scope="col">Almacén</th>
                             <th scope="col">Estado EUDR</th>
+                            <th scope="col" class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,10 +47,13 @@
                                     {{ batch.get_eudr_compliance_status_display }}
                                 </span>
                             </td>
+                            <td class="text-end">
+                                <a href="{% url 'edit_batch' batch.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="py-5 text-center text-secondary">Aún no has registrado lotes. Crea el primero para comenzar a rastrear inventario.</td>
+                            <td colspan="7" class="py-5 text-center text-secondary">Aún no has registrado lotes. Crea el primero para comenzar a rastrear inventario.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

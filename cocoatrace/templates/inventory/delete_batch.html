@@ -1,0 +1,28 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">{{ batch.batch_id }}</p>
+            <h1 class="page-title">Eliminar lote</h1>
+            <p class="page-helper">Esta acción no se puede deshacer. El lote será eliminado del inventario y se actualizará el stock del almacén.</p>
+        </div>
+        <a href="{% url 'batch_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <p>¿Seguro que deseas eliminar el lote <strong>{{ batch.batch_id }}</strong> asociado al productor {{ batch.producer.full_name }}?</p>
+            <p class="table-meta mb-0">Cantidad registrada: {{ batch.quantity }} kg</p>
+        </div>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <a href="{% url 'edit_batch' batch.pk %}" class="btn btn-outline-secondary">Conservar lote</a>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
