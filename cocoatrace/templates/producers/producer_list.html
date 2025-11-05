@@ -5,31 +5,31 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Producer Registry</p>
-            <h1 class="page-title">Supply Network</h1>
-            <p class="page-helper">Search, filter, and manage all upstream suppliers enrolled in your EUDR program.</p>
+            <p class="page-subtitle">Registro de productores</p>
+            <h1 class="page-title">Red de suministro</h1>
+            <p class="page-helper">Busca, filtra y administra todos los productores vinculados a tu programa EUDR.</p>
         </div>
         <a href="{% url 'create_producer' %}" class="btn btn-primary">
-            <i class="fa-solid fa-user-plus me-2"></i>New Producer
+            <i class="fa-solid fa-user-plus me-2"></i>Nuevo productor
         </a>
     </div>
 
     <div class="card mb-4">
         <div class="card-body gap-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
             <div class="filter-group flex-grow-1">
-                <label class="form-label" for="producer-search">Quick Search</label>
+                <label class="form-label" for="producer-search">Búsqueda rápida</label>
                 <div class="input-icon">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="producer-search" class="form-control" placeholder="Search by name, code, municipality...">
+                    <input type="text" id="producer-search" class="form-control" placeholder="Buscar por nombre, código o municipio...">
                 </div>
             </div>
             <div class="filter-group">
-                <label class="form-label" for="compliance-filter">Compliance</label>
+                <label class="form-label" for="compliance-filter">Estado de cumplimiento</label>
                 <select id="compliance-filter" class="form-select">
-                    <option value="">All statuses</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Pending Review">Pending review</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="">Todos los estados</option>
+                    <option value="Approved">Aprobado</option>
+                    <option value="Pending Review">Pendiente por revisar</option>
+                    <option value="Rejected">Rechazado</option>
                 </select>
             </div>
         </div>
@@ -41,11 +41,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th scope="col">Producer</th>
-                            <th scope="col">Producer ID</th>
-                            <th scope="col">Location</th>
-                            <th scope="col">Plots</th>
-                            <th scope="col">Compliance</th>
+                            <th scope="col">Productor</th>
+                            <th scope="col">ID del productor</th>
+                            <th scope="col">Ubicación</th>
+                            <th scope="col">Parcelas</th>
+                            <th scope="col">Cumplimiento</th>
                         </tr>
                     </thead>
                     <tbody id="producer-table-body">
@@ -63,12 +63,12 @@
                             <td>{{ producer.municipality }}, {{ producer.department }}</td>
                             <td>{{ producer.plot_set.count }}</td>
                             <td>
-                                <span class="status-chip status-{{ producer.compliance_status|slugify }}">{{ producer.compliance_status }}</span>
+                                <span class="status-chip status-{{ producer.compliance_status|slugify }}">{{ producer.get_compliance_status_display }}</span>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-secondary">No producers found. Begin by creating a new producer profile.</td>
+                            <td colspan="5" class="text-center py-4 text-secondary">No se encontraron productores. Comienza creando un nuevo perfil.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

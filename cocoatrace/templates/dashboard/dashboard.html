@@ -4,11 +4,11 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">EUDR Command Center</p>
-            <h1 class="page-title">Traceability Overview</h1>
-            <p class="page-helper">Monitor producer compliance, plot onboarding, inventory movements, and warehouse utilisation in real time.</p>
+            <p class="page-subtitle">Centro de control EUDR</p>
+            <h1 class="page-title">Panorama de trazabilidad</h1>
+            <p class="page-helper">Supervisa en tiempo real la conformidad de productores, el alta de parcelas, los movimientos de inventario y el uso de los almacenes.</p>
         </div>
-        <a href="{% url 'producer_list' %}" class="btn btn-primary"><i class="fa-solid fa-user-plus me-2"></i>New Producer</a>
+        <a href="{% url 'producer_list' %}" class="btn btn-primary"><i class="fa-solid fa-user-plus me-2"></i>Nuevo productor</a>
     </div>
 
     <div class="overview-grid">
@@ -28,9 +28,9 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-shield-check me-2"></i>
-                    Producer Compliance Distribution
+                    Distribución de cumplimiento de productores
                 </div>
-                <span class="table-meta">Active plots: {{ active_plots }} &middot; Compliant plots: {{ compliant_plots }}</span>
+                <span class="table-meta">Parcelas activas: {{ active_plots }} &middot; Parcelas conformes: {{ compliant_plots }}</span>
             </div>
             <div class="card-body">
                 <div class="d-flex flex-column gap-3">
@@ -53,9 +53,9 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-boxes-stacked me-2"></i>
-                    Batch Compliance Snapshot
+                    Estado de cumplimiento de lotes
                 </div>
-                <span class="table-meta">{{ warehouse_utilisation }}% warehouse utilisation</span>
+                <span class="table-meta">{{ warehouse_utilisation }}% de utilización de almacenes</span>
             </div>
             <div class="card-body">
                 <div class="d-flex flex-column gap-3">
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-secondary mb-0">No batches registered yet.</p>
+                    <p class="text-secondary mb-0">Aún no hay lotes registrados.</p>
                     {% endfor %}
                 </div>
             </div>
@@ -82,19 +82,19 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-warehouse me-2"></i>
-                    Warehouse Utilisation
+                    Uso de almacenes
                 </div>
-                <span class="table-meta">{{ current_stock }} kg of {{ total_capacity }} kg</span>
+                <span class="table-meta">{{ current_stock }} kg de {{ total_capacity }} kg</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">Warehouse</th>
-                                <th scope="col">Municipality</th>
-                                <th scope="col">Capacity (kg)</th>
-                                <th scope="col">Current Stock (kg)</th>
+                                <th scope="col">Almacén</th>
+                                <th scope="col">Municipio</th>
+                                <th scope="col">Capacidad (kg)</th>
+                                <th scope="col">Existencia (kg)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,7 +107,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-secondary">No warehouses registered yet.</td>
+                                <td colspan="4" class="text-center py-4 text-secondary">Aún no hay almacenes registrados.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -120,9 +120,9 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-clock-rotate-left me-2"></i>
-                    Recent Activity
+                    Actividad reciente
                 </div>
-                <span class="table-meta">Latest updates across producers, plots, and batches</span>
+                <span class="table-meta">Últimos movimientos entre productores, parcelas y lotes</span>
             </div>
             <div class="card-body">
                 {% if recent_activity %}
@@ -133,7 +133,7 @@
                         <div class="timeline-content">
                             <div class="d-flex justify-content-between">
                                 <strong>{{ event.title }}</strong>
-                                <span class="table-meta">{{ event.timestamp|date:"M d, Y H:i" }}</span>
+                                <span class="table-meta">{{ event.timestamp|date:"d M Y H:i" }}</span>
                             </div>
                             <p class="table-meta mb-0">{{ event.meta }} &middot; {{ event.category }}</p>
                         </div>
@@ -141,7 +141,7 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-secondary mb-0">No recent activity recorded.</p>
+                <p class="text-secondary mb-0">Aún no hay actividad registrada.</p>
                 {% endif %}
             </div>
         </div>

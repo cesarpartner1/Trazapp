@@ -399,6 +399,34 @@ body {
   font-weight: 600;
 }
 
+.form-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--card-background);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--card-border);
+  border-radius: var(--border-radius);
+  box-shadow: none;
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--text-accent);
+  box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.18);
+}
+
+.form-select option {
+  color: var(--text-primary);
+}
+
 .metric-title {
   font-size: 0.75rem;
   text-transform: uppercase;

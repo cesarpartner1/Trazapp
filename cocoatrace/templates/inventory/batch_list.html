@@ -2,38 +2,59 @@
 
 {% block content %}
 <div class="container-fluid">
-    <h1 class="mt-4">Inventory</h1>
-    <a href="{% url 'create_batch' %}" class="btn btn-primary mb-3">Create New Batch</a>
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            All Cocoa Batches
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">Inventario</p>
+            <h1 class="page-title">Lotes de cacao</h1>
+            <p class="page-helper">Administra el flujo de lotes, volúmenes y destinos para garantizar trazabilidad completa.</p>
         </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Batch ID</th>
-                        <th>Producer</th>
-                        <th>Plot of Origin</th>
-                        <th>Quantity (kg)</th>
-                        <th>Warehouse Location</th>
-                        <th>EUDR Compliance Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for batch in batches %}
-                    <tr>
-                        <td>{{ batch.batch_id }}</td>
-                        <td>{{ batch.producer.full_name }}</td>
-                        <td>{{ batch.plot.name }}</td>
-                        <td>{{ batch.quantity }}</td>
-                        <td>{{ batch.warehouse_location.name }}</td>
-                        <td>{{ batch.get_eudr_compliance_status_display }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <a href="{% url 'create_batch' %}" class="btn btn-primary">
+            <i class="fa-solid fa-cubes me-2"></i>Nuevo lote
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="data-table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Lote</th>
+                            <th scope="col">Productor</th>
+                            <th scope="col">Parcela de origen</th>
+                            <th scope="col">Cantidad (kg)</th>
+                            <th scope="col">Almacén</th>
+                            <th scope="col">Estado EUDR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for batch in batches %}
+                        <tr>
+                            <td>
+                                <span class="table-link">{{ batch.batch_id }}</span>
+                                <div class="table-meta">Creado el {{ batch.created_at|date:"d M Y" }}</div>
+                            </td>
+                            <td>
+                                {{ batch.producer.full_name }}
+                                <div class="table-meta">{{ batch.producer.municipality }}, {{ batch.producer.department }}</div>
+                            </td>
+                            <td>{{ batch.plot.name }}</td>
+                            <td>{{ batch.quantity|floatformat:2 }}</td>
+                            <td>{{ batch.warehouse_location.name }}</td>
+                            <td>
+                                <span class="status-chip status-{{ batch.eudr_compliance_status|slugify }}">
+                                    {{ batch.get_eudr_compliance_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="py-5 text-center text-secondary">Aún no has registrado lotes. Crea el primero para comenzar a rastrear inventario.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

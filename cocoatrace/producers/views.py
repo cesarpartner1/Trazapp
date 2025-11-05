@@ -47,7 +47,7 @@ def producer_detail(request, pk):
             name=request.POST.get('name'),
             file=request.FILES.get('file'),
         )
-        messages.success(request, 'Document uploaded.')
+        messages.success(request, 'Documento cargado.')
         return redirect('producer_detail', pk=pk)
 
     return render(
@@ -70,9 +70,9 @@ def add_plot(request, producer_pk):
             plot = form.save(commit=False)
             plot.producer = producer
             plot.save()
-            messages.success(request, 'Plot added to producer profile.')
+            messages.success(request, 'Parcela agregada al perfil del productor.')
             return redirect('producer_detail', pk=producer_pk)
-        messages.error(request, 'Fix the highlighted issues and try again.')
+        messages.error(request, 'Corrige los campos marcados e intenta de nuevo.')
 
     return render(
         request,
@@ -90,9 +90,9 @@ def create_producer(request):
     if request.method == 'POST':
         if form.is_valid():
             producer = form.save()
-            messages.success(request, 'Producer profile created.')
+            messages.success(request, 'Perfil de productor creado.')
             return redirect('producer_detail', pk=producer.pk)
-        messages.error(request, 'Review the form and resolve validation errors.')
+    messages.error(request, 'Revisa el formulario y corrige los errores de validación.')
 
     return render(
         request,
@@ -127,9 +127,9 @@ def edit_document(request, producer_pk, document_pk):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            messages.success(request, 'Document updated successfully.')
+            messages.success(request, 'Documento actualizado correctamente.')
             return redirect('producer_detail', pk=producer_pk)
-        messages.error(request, 'Resolve the errors below and try again.')
+        messages.error(request, 'Soluciona los errores y vuelve a intentarlo.')
 
     return render(
         request,
@@ -148,7 +148,7 @@ def delete_document(request, producer_pk, document_pk):
 
     if request.method == 'POST':
         document.delete()
-        messages.success(request, 'Document removed.')
+        messages.success(request, 'Documento eliminado.')
         return redirect('producer_detail', pk=producer_pk)
 
     return render(

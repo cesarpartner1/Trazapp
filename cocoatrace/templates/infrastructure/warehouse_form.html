@@ -5,16 +5,16 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Logistics Network</p>
-            <h1 class="page-title">New Warehouse</h1>
-            <p class="page-helper">Register a storage facility to unlock batch routing and compliance reporting.</p>
+            <p class="page-subtitle">Red logística</p>
+            <h1 class="page-title">Nuevo almacén</h1>
+            <p class="page-helper">Registra un centro de acopio para habilitar el enrutamiento de lotes y los reportes de cumplimiento.</p>
         </div>
-        <a href="{% url 'warehouse_list' %}" class="btn btn-outline-secondary">Cancel</a>
+        <a href="{% url 'warehouse_list' %}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
-        <strong>Fix the issues below:</strong>
+        <strong>Corrige los siguientes errores:</strong>
         <ul class="mb-0">
             {% for field in form %}
                 {% for error in field.errors %}
@@ -33,24 +33,24 @@
         <div class="card">
             <div class="card-header">
                 <span class="step-indicator">1</span>
-                Identity & Capacity
+                Identidad y capacidad
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label" for="id_code">Warehouse Code</label>
+                        <label class="form-label" for="id_code">Código del almacén</label>
                         {{ form.code }}
                     </div>
                     <div class="col-md-8">
-                        <label class="form-label" for="id_name">Warehouse Name</label>
+                        <label class="form-label" for="id_name">Nombre del almacén</label>
                         {{ form.name }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_capacity_kg">Capacity (kg)</label>
+                        <label class="form-label" for="id_capacity_kg">Capacidad (kg)</label>
                         {{ form.capacity_kg }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_current_stock_kg">Current Stock (kg)</label>
+                        <label class="form-label" for="id_current_stock_kg">Existencia actual (kg)</label>
                         {{ form.current_stock_kg }}
                     </div>
                 </div>
@@ -60,36 +60,36 @@
         <div class="card">
             <div class="card-header">
                 <span class="step-indicator">2</span>
-                Location & Status
+                Ubicación y estado
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="form-label" for="id_address">Address</label>
+                        <label class="form-label" for="id_address">Dirección</label>
                         {{ form.address }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_municipality">Municipality</label>
+                        <label class="form-label" for="id_municipality">Municipio</label>
                         {{ form.municipality }}
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" for="id_latitude">Latitude</label>
+                        <label class="form-label" for="id_latitude">Latitud</label>
                         {{ form.latitude }}
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" for="id_longitude">Longitude</label>
+                        <label class="form-label" for="id_longitude">Longitud</label>
                         {{ form.longitude }}
                     </div>
                     <div class="col-12">
                         <div class="form-check">
                             {{ form.is_active }}
-                            <label class="form-check-label" for="id_is_active">Active warehouse</label>
+                            <label class="form-check-label" for="id_is_active">Almacén activo</label>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Save Warehouse</button>
+                <button type="submit" class="btn btn-primary">Guardar almacén</button>
             </div>
         </div>
     </form>

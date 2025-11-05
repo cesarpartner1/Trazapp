@@ -8,7 +8,7 @@ class Batch(models.Model):
     warehouse_location = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True)
     eudr_compliance_status = models.CharField(
         max_length=20,
-        choices=[('compliant', 'Compliant'), ('pending', 'Pending'), ('non_compliant', 'Non-Compliant')],
+        choices=[('compliant', 'Conforme'), ('pending', 'Pendiente'), ('non_compliant', 'No conforme')],
         default='pending'
     )
     producer = models.ForeignKey(Producer, on_delete=models.PROTECT)

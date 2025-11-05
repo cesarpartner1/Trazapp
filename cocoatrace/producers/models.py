@@ -79,28 +79,28 @@ def validate_geojson(value):
     """
     try:
         if not isinstance(value, dict):
-            raise ValidationError("Invalid GeoJSON: must be a dictionary.")
+            raise ValidationError("GeoJSON inválido: debe ser un diccionario.")
 
         geom_type = value.get("type")
         coordinates = value.get("coordinates")
 
         if not geom_type or not coordinates:
-            raise ValidationError("Invalid GeoJSON: 'type' and 'coordinates' are required.")
+            raise ValidationError("GeoJSON inválido: los campos 'type' y 'coordinates' son obligatorios.")
 
         if geom_type not in ["Polygon", "MultiPolygon"]:
-             raise ValidationError("Invalid GeoJSON type: must be 'Polygon' or 'MultiPolygon'.")
+            raise ValidationError("Tipo de GeoJSON inválido: debe ser 'Polygon' o 'MultiPolygon'.")
 
         if not isinstance(coordinates, list):
-            raise ValidationError("Invalid GeoJSON: 'coordinates' must be a list.")
+            raise ValidationError("GeoJSON inválido: 'coordinates' debe ser una lista.")
 
         if geom_type == "Polygon":
             if not all(isinstance(ring, list) for ring in coordinates):
-                raise ValidationError("Invalid Polygon: coordinates must be a list of rings.")
+                raise ValidationError("Polígono inválido: las coordenadas deben ser una lista de anillos.")
             if not all(isinstance(point, list) and len(point) >= 2 for ring in coordinates for point in ring):
-                 raise ValidationError("Invalid Polygon: each ring must be a list of points (lists of numbers).")
+                raise ValidationError("Polígono inválido: cada anillo debe ser una lista de puntos (listas numéricas).")
 
     except (ValueError, TypeError):
-        raise ValidationError("Invalid GeoJSON format.")
+        raise ValidationError("Formato de GeoJSON inválido.")
 
 
 class Producer(models.Model):
@@ -120,7 +120,7 @@ class Producer(models.Model):
     # Compliance
     compliance_status = models.CharField(
         max_length=20,
-        choices=[('Approved', 'Approved'), ('Pending Review', 'Pending Review'), ('Rejected', 'Rejected')],
+        choices=[('Approved', 'Aprobado'), ('Pending Review', 'Pendiente por revisar'), ('Rejected', 'Rechazado')],
         default='Pending Review'
     )
 

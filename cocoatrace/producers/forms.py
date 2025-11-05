@@ -49,14 +49,14 @@ class PlotForm(forms.ModelForm):
     def clean_polygon(self):
         raw_value = self.cleaned_data["polygon"]
         if not raw_value:
-            raise forms.ValidationError("Draw the plot boundary on the map before saving.")
+            raise forms.ValidationError("Dibuja el límite de la parcela en el mapa antes de guardar.")
         try:
             parsed = json.loads(raw_value)
         except json.JSONDecodeError as exc:
-            raise forms.ValidationError("Invalid GeoJSON payload.") from exc
+            raise forms.ValidationError("El GeoJSON proporcionado no es válido.") from exc
         centroid = compute_centroid(parsed)
         if not centroid:
-            raise forms.ValidationError("Unable to compute a centroid for the provided geometry.")
+            raise forms.ValidationError("No fue posible calcular el centroide de la geometría proporcionada.")
         self.cleaned_data["centroid_values"] = centroid
         return parsed
 

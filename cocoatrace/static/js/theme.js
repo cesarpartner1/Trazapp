@@ -33,7 +33,7 @@
     }
     const label = toggle.querySelector('[data-theme-label]');
     if (label) {
-      label.textContent = theme === 'dark' ? 'Dark' : 'Light';
+      label.textContent = theme === 'dark' ? 'Oscuro' : 'Claro';
     }
   };
 

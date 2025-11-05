@@ -22,9 +22,9 @@ def warehouse_create(request):
 	if request.method == 'POST':
 		if form.is_valid():
 			form.save()
-			messages.success(request, 'Warehouse registered successfully.')
+			messages.success(request, 'Almacén registrado correctamente.')
 			return redirect('warehouse_list')
-		messages.error(request, 'Resolve the errors below and try again.')
+		messages.error(request, 'Soluciona los errores e intenta de nuevo.')
 
 	return render(
 		request,

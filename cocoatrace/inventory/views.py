@@ -20,7 +20,7 @@ def create_batch(request):
         try:
             quantity = Decimal(request.POST.get('quantity'))
         except (TypeError, InvalidOperation):
-            messages.error(request, 'Provide a valid quantity value. Use numbers only.')
+            messages.error(request, 'Ingresa una cantidad válida utilizando solo números.')
         else:
             Batch.objects.create(
                 producer=producer,
@@ -30,7 +30,7 @@ def create_batch(request):
                 warehouse_location_id=request.POST.get('warehouse_location') or None,
                 eudr_compliance_status=request.POST.get('eudr_compliance_status'),
             )
-            messages.success(request, 'Batch registered successfully.')
+            messages.success(request, 'Lote registrado correctamente.')
             return redirect('batch_list')
 
     producers = Producer.objects.all()

@@ -6,15 +6,15 @@
     <div class="page-heading">
         <div>
             <p class="page-subtitle">{{ producer.code }}</p>
-            <h1 class="page-title">Add New Plot</h1>
-            <p class="page-helper">Draw the farm boundary and capture key agronomic details.</p>
+            <h1 class="page-title">Nueva parcela</h1>
+            <p class="page-helper">Dibuja el límite de la finca y captura los datos agronómicos clave.</p>
         </div>
-        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Back to Profile</a>
+        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Volver al perfil</a>
     </div>
 
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
-        <strong>Validation errors:</strong>
+        <strong>Errores de validación:</strong>
         <ul class="mb-0">
             {% for field in form %}
                 {% for error in field.errors %}
@@ -33,20 +33,20 @@
             <div class="card-header d-flex align-items-center justify-content-between">
                 <div>
                     <span class="step-indicator">1</span>
-                    Locate & Draw Plot
+                    Ubica y dibuja la parcela
                 </div>
                 <div class="d-flex gap-2">
                     <label class="btn btn-outline-secondary mb-0" for="geojson-upload">
-                        <i class="fa-solid fa-file-import me-2"></i>Upload GeoJSON
+                        <i class="fa-solid fa-file-import me-2"></i>Importar GeoJSON
                     </label>
                     <input type="file" id="geojson-upload" accept="application/geo+json,application/json" hidden>
                 </div>
             </div>
             <div class="card-body">
                 <div id="map" class="plot-map"></div>
-                <p class="small text-secondary mt-2">Draw a single polygon that represents the plot boundary or upload a GeoJSON file. Only one shape can be stored per plot.</p>
+                <p class="small text-secondary mt-2">Dibuja un único polígono que represente el límite de la parcela o sube un archivo GeoJSON. Solo se almacena una geometría por parcela.</p>
                 <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-primary" type="button" id="go-to-details">Next: Plot Details</button>
+                    <button class="btn btn-primary" type="button" id="go-to-details">Siguiente: detalles de la parcela</button>
                 </div>
             </div>
         </div>
@@ -57,32 +57,32 @@
             <div class="card-header d-flex align-items-center justify-content-between">
                 <div>
                     <span class="step-indicator">2</span>
-                    Plot Details
+                    Detalles de la parcela
                 </div>
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="id_name">Plot Name</label>
+                        <label class="form-label" for="id_name">Nombre de la parcela</label>
                         {{ form.name }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_plot_code">Plot Identifier</label>
+                        <label class="form-label" for="id_plot_code">Identificador de parcela</label>
                         {{ form.plot_code }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_area_hectares">Area (hectares)</label>
+                        <label class="form-label" for="id_area_hectares">Área (hectáreas)</label>
                         {{ form.area_hectares }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Captured Geometry</label>
-                        <div class="geometry-chip" id="geometry-status">No polygon captured yet</div>
+                        <label class="form-label">Geometría capturada</label>
+                        <div class="geometry-chip" id="geometry-status">Sin geometría capturada</div>
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
-                <button class="btn btn-outline-secondary" type="button" id="back-to-map">Back</button>
-                <button type="submit" class="btn btn-primary">Save Plot</button>
+                <button class="btn btn-outline-secondary" type="button" id="back-to-map">Regresar</button>
+                <button type="submit" class="btn btn-primary">Guardar parcela</button>
             </div>
         </form>
     </div>
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (typeof L === 'undefined') {
-        console.error('Leaflet failed to load. Check your internet connection.');
+        console.error('Leaflet no se pudo cargar. Verifica tu conexión a internet.');
         return;
     }
 
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     map.addLayer(drawnItems);
 
     if (!L.Control.Draw) {
-        console.error('Leaflet Draw plugin failed to load. Drawing tools will be unavailable.');
+        console.error('Leaflet Draw no se pudo cargar. Las herramientas de dibujo no estarán disponibles.');
     } else {
         const drawControl = new L.Control.Draw({
             edit: {
@@ -147,17 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const geojsonUpload = document.getElementById('geojson-upload');
 
     if (!geometryField || !geometryChip || !detailsCard || !nextBtn || !backBtn || !geojsonUpload) {
-        console.error('Plot form elements are missing.');
+        console.error('Faltan elementos del formulario de parcela.');
         return;
     }
 
     function updateGeometryDisplay(geometry) {
         if (geometry) {
             const vertexCount = geometry.coordinates?.[0]?.length || 0;
-            geometryChip.textContent = `${geometry.type} • ${vertexCount} vertices`;
+            geometryChip.textContent = `${geometry.type} • ${vertexCount} vértices`;
             geometryChip.classList.add('has-geometry');
         } else {
-            geometryChip.textContent = 'No polygon captured yet';
+            geometryChip.textContent = 'Sin geometría capturada';
             geometryChip.classList.remove('has-geometry');
         }
     }
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextBtn.addEventListener('click', function () {
         if (!geometryField.value) {
-            alert('Capture the plot geometry before moving on.');
+            alert('Captura la geometría de la parcela antes de continuar.');
             return;
         }
         showDetailsStep();
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const geometry = data.type === 'Feature' ? data.geometry : data;
 
                 if (!geometry || (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon')) {
-                    alert('Only Polygon or MultiPolygon GeoJSON is supported.');
+                    alert('Solo se admite GeoJSON de tipo Polygon o MultiPolygon.');
                     return;
                 }
 
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showDetailsStep();
             } catch (error) {
                 console.error(error);
-                alert('Unable to parse the GeoJSON file.');
+                alert('No fue posible leer el archivo GeoJSON.');
             }
         };
 
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGeometryDisplay(geometry);
             showDetailsStep();
         } catch (error) {
-            console.warn('Saved geometry could not be rendered', error);
+            console.warn('La geometría guardada no se pudo mostrar', error);
         }
     }
 

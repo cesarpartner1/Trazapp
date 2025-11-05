@@ -5,16 +5,16 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Onboarding</p>
-            <h1 class="page-title">New Producer</h1>
-            <p class="page-helper">Capture the core identity, contact details, and compliance metadata for a producer. Use the steps below to keep data tidy and complete.</p>
+            <p class="page-subtitle">Registro</p>
+            <h1 class="page-title">Nuevo productor</h1>
+            <p class="page-helper">Captura la identidad, los datos de contacto y la información de cumplimiento del productor siguiendo los pasos para mantener la calidad del dato.</p>
         </div>
-        <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Cancel</a>
+        <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 
     {% if form.errors %}
     <div class="alert alert-danger" role="alert">
-        <strong>Please review the form:</strong>
+        <strong>Revisa el formulario:</strong>
         <ul class="mb-0">
             {% for field in form %}
                 {% for error in field.errors %}
@@ -33,89 +33,89 @@
         <div class="card" data-step="1">
             <div class="card-header">
                 <span class="step-indicator">1</span>
-                Identity
+                Identidad
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="id_full_name">Full name</label>
+                        <label class="form-label" for="id_full_name">Nombre completo</label>
                         {{ form.full_name }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_code">Producer ID</label>
+                        <label class="form-label" for="id_code">ID del productor</label>
                         {{ form.code }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_document_type">Document type</label>
+                        <label class="form-label" for="id_document_type">Tipo de documento</label>
                         {{ form.document_type }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_document_number">Document number</label>
+                        <label class="form-label" for="id_document_number">Número de documento</label>
                         {{ form.document_number }}
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-end">
-                <button type="button" class="btn btn-primary" data-next>Continue</button>
+                <button type="button" class="btn btn-primary" data-next>Continuar</button>
             </div>
         </div>
 
         <div class="card" data-step="2">
             <div class="card-header">
                 <span class="step-indicator">2</span>
-                Contact & Location
+                Contacto y ubicación
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="id_phone">Phone</label>
+                        <label class="form-label" for="id_phone">Teléfono</label>
                         {{ form.phone }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_email">Email</label>
+                        <label class="form-label" for="id_email">Correo electrónico</label>
                         {{ form.email }}
                     </div>
                     <div class="col-12">
-                        <label class="form-label" for="id_address">Address</label>
+                        <label class="form-label" for="id_address">Dirección</label>
                         {{ form.address }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_municipality">Municipality</label>
+                        <label class="form-label" for="id_municipality">Municipio</label>
                         {{ form.municipality }}
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label" for="id_department">Department</label>
+                        <label class="form-label" for="id_department">Departamento</label>
                         {{ form.department }}
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-secondary" data-prev>Back</button>
-                <button type="button" class="btn btn-primary" data-next>Continue</button>
+                <button type="button" class="btn btn-outline-secondary" data-prev>Volver</button>
+                <button type="button" class="btn btn-primary" data-next>Continuar</button>
             </div>
         </div>
 
         <div class="card" data-step="3">
             <div class="card-header">
                 <span class="step-indicator">3</span>
-                Compliance
+                Cumplimiento
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="id_compliance_status">Status</label>
+                        <label class="form-label" for="id_compliance_status">Estado</label>
                         {{ form.compliance_status }}
                     </div>
                     <div class="col-md-6">
                         <div class="alert alert-info" role="alert">
-                            Set to <strong>Pending Review</strong> while awaiting due diligence.
+                            Selecciona <strong>Pendiente por revisar</strong> mientras se realiza la debida diligencia.
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-secondary" data-prev>Back</button>
-                <button type="submit" class="btn btn-primary">Create Producer</button>
+                <button type="button" class="btn btn-outline-secondary" data-prev>Volver</button>
+                <button type="submit" class="btn btn-primary">Crear productor</button>
             </div>
         </div>
     </form>

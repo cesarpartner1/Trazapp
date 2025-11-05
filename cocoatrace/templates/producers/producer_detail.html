@@ -5,39 +5,39 @@
 <div class="container-fluid producer-profile">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Producer {{ producer.code }}</p>
+            <p class="page-subtitle">Productor {{ producer.code }}</p>
             <h1 class="page-title">{{ producer.full_name }}</h1>
-            <p class="page-helper">Complete traceability for {{ producer.municipality }}, {{ producer.department }}.</p>
+            <p class="page-helper">Trazabilidad completa para {{ producer.municipality }}, {{ producer.department }}.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Back to Producers</a>
-            <span class="status-chip status-{{ producer.compliance_status|slugify }} align-self-center">{{ producer.compliance_status }}</span>
+            <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Volver a productores</a>
+            <span class="status-chip status-{{ producer.compliance_status|slugify }} align-self-center">{{ producer.get_compliance_status_display }}</span>
         </div>
     </div>
 
     <div class="overview-grid">
         <div class="card">
-            <div class="card-header">Contact & Identity</div>
+            <div class="card-header">Contacto e identidad</div>
             <div class="card-body">
                 <dl class="data-grid">
                     <div>
-                        <dt>Document</dt>
+                        <dt>Documento</dt>
                         <dd>{{ producer.document_type }} · {{ producer.document_number }}</dd>
                     </div>
                     <div>
-                        <dt>Phone</dt>
+                        <dt>Teléfono</dt>
                         <dd>{{ producer.phone }}</dd>
                     </div>
                     <div>
-                        <dt>Email</dt>
+                        <dt>Correo electrónico</dt>
                         <dd>{{ producer.email|default:"—" }}</dd>
                     </div>
                     <div>
-                        <dt>Address</dt>
+                        <dt>Dirección</dt>
                         <dd>{{ producer.address }}</dd>
                     </div>
                     <div>
-                        <dt>Location</dt>
+                        <dt>Ubicación</dt>
                         <dd>{{ producer.municipality }}, {{ producer.department }}</dd>
                     </div>
                 </dl>
@@ -45,27 +45,27 @@
         </div>
 
         <div class="card">
-            <div class="card-header">Compliance Snapshot</div>
+            <div class="card-header">Resumen de cumplimiento</div>
             <div class="card-body compliance-overview">
                 <div>
-                    <p class="metric-title">Plots onboarded</p>
+                    <p class="metric-title">Parcelas registradas</p>
                     <p class="metric-value">{{ plots|length }}</p>
                 </div>
                 <div>
-                    <p class="metric-title">Last update</p>
-                    <p class="metric-value">{{ producer.updated_at|date:"M d, Y" }}</p>
+                    <p class="metric-title">Última actualización</p>
+                    <p class="metric-value">{{ producer.updated_at|date:"d M Y" }}</p>
                 </div>
                 <div>
-                    <p class="metric-title">Created</p>
-                    <p class="metric-value">{{ producer.created_at|date:"M d, Y" }}</p>
+                    <p class="metric-title">Creado</p>
+                    <p class="metric-value">{{ producer.created_at|date:"d M Y" }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="tabs" role="tablist">
-        <button class="tabs-link active" data-target="plots-panel" role="tab">Farm Plots</button>
-        <button class="tabs-link" data-target="documents-panel" role="tab">Documents</button>
+        <button class="tabs-link active" data-target="plots-panel" role="tab">Parcelas</button>
+        <button class="tabs-link" data-target="documents-panel" role="tab">Documentos</button>
     </div>
 
     <section class="tabs-panel active" id="plots-panel" role="tabpanel">
@@ -73,9 +73,9 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-earth-americas me-2"></i>
-                    Plot Map Overview
+                    Mapa de parcelas
                 </div>
-                <span class="table-meta">Powered by OpenStreetMap</span>
+                <span class="table-meta">Fuente: OpenStreetMap</span>
             </div>
             <div class="card-body">
                 <div id="producer-map"
@@ -89,10 +89,10 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-map-location-dot me-2"></i>
-                    Registered plots
+                    Parcelas registradas
                 </div>
                 <a href="{% url 'add_plot' producer.pk %}" class="btn btn-primary btn-sm">
-                    <i class="fa-solid fa-draw-polygon me-2"></i>New Plot
+                    <i class="fa-solid fa-draw-polygon me-2"></i>Nueva parcela
                 </a>
             </div>
             <div class="card-body p-0">
@@ -100,9 +100,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">Plot</th>
-                                <th scope="col">Identifier</th>
-                                <th scope="col">Area (ha)</th>
+                                <th scope="col">Parcela</th>
+                                <th scope="col">Identificador</th>
+                                <th scope="col">Área (ha)</th>
                                 <th scope="col">GeoJSON</th>
                             </tr>
                         </thead>
@@ -111,21 +111,21 @@
                             <tr>
                                 <td>
                                     <a class="table-link" href="{% url 'plot_detail' producer.pk plot.pk %}">{{ plot.name }}</a>
-                                    <div class="table-meta">Updated {{ plot.created_at|date:"M d, Y" }}</div>
+                                    <div class="table-meta">Actualizada el {{ plot.created_at|date:"d M Y" }}</div>
                                 </td>
                                 <td><code>{{ plot.plot_code }}</code></td>
                                 <td>{{ plot.area_hectares }}</td>
                                 <td>
                                     {% if plot.polygon %}
-                                    <span class="status-chip status-approved">Captured</span>
+                                    <span class="status-chip status-approved">Registrado</span>
                                     {% else %}
-                                    <span class="status-chip status-rejected">Missing</span>
+                                    <span class="status-chip status-rejected">Sin geometría</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-secondary">No farm plots added yet.</td>
+                                <td colspan="4" class="text-center py-4 text-secondary">Aún no hay parcelas registradas.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -139,21 +139,21 @@
         <div class="card">
             <div class="card-header">
                 <i class="fa-solid fa-folder-tree me-2"></i>
-                Compliance documents
+                Documentos de cumplimiento
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
                     {% csrf_token %}
                     <div class="col-md-5">
-                        <label class="form-label" for="id_name">Document name</label>
+                        <label class="form-label" for="id_name">Nombre del documento</label>
                         <input type="text" name="name" id="id_name" class="form-control" required>
                     </div>
                     <div class="col-md-5">
-                        <label class="form-label" for="id_file">Attachment</label>
+                        <label class="form-label" for="id_file">Archivo adjunto</label>
                         <input type="file" name="file" id="id_file" class="form-control" required>
                     </div>
                     <div class="col-md-2 d-grid">
-                        <button type="submit" class="btn btn-primary">Upload</button>
+                        <button type="submit" class="btn btn-primary">Subir</button>
                     </div>
                 </form>
 
@@ -161,28 +161,28 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th scope="col">Document</th>
-                                <th scope="col">Uploaded</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">Documento</th>
+                                <th scope="col">Fecha de carga</th>
+                                <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for doc in producer.documents.all %}
                             <tr>
                                 <td>{{ doc.name }}</td>
-                                <td>{{ doc.uploaded_at|date:"Y-m-d H:i" }}</td>
+                                <td>{{ doc.uploaded_at|date:"d M Y H:i" }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-2">
-                                        <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">Preview</a>
-                                        <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-primary" download>Download</a>
-                                        <a href="{% url 'edit_document' producer.pk doc.pk %}" class="btn btn-sm btn-outline-info">Edit</a>
-                                        <a href="{% url 'delete_document' producer.pk doc.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-secondary" target="_blank">Ver</a>
+                                        <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-primary" download>Descargar</a>
+                                        <a href="{% url 'edit_document' producer.pk doc.pk %}" class="btn btn-sm btn-outline-info">Editar</a>
+                                        <a href="{% url 'delete_document' producer.pk doc.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
                                     </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="3" class="text-center py-4 text-secondary">No documents uploaded yet.</td>
+                                <td colspan="3" class="text-center py-4 text-secondary">Aún no hay documentos cargados.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         features = JSON.parse(rawFeatures);
     } catch (error) {
-        console.warn('Unable to parse plot features', error);
+        console.warn('No fue posible interpretar las parcelas', error);
         features = [];
     }
 
@@ -262,8 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }).addTo(map);
             layer.bindPopup(`
                 <strong>${feature.name}</strong><br>
-                Code: ${feature.code}<br>
-                Area: ${feature.area} ha
+                Código: ${feature.code}<br>
+                Área: ${feature.area} ha
             `);
             const layerBounds = layer.getBounds();
             if (layerBounds.isValid()) {
@@ -278,8 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const marker = L.marker([centroid.lat, centroid.lng]).addTo(markerGroup);
             marker.bindPopup(`
                 <strong>${feature.name}</strong><br>
-                Code: ${feature.code}<br>
-                Area: ${feature.area} ha
+                Código: ${feature.code}<br>
+                Área: ${feature.area} ha
             `);
             featureBounds = L.latLngBounds([marker.getLatLng()]);
         }

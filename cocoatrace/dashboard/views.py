@@ -38,19 +38,19 @@ def dashboard(request):
 
     compliance_distribution = [
         {
-            'label': 'Approved',
+            'label': 'Aprobados',
             'count': approved_producers,
             'percent': _percentage(approved_producers, producer_count),
             'status_class': 'status-approved',
         },
         {
-            'label': 'Pending Review',
+            'label': 'Pendientes por revisar',
             'count': pending_producers,
             'percent': _percentage(pending_producers, producer_count),
             'status_class': 'status-pending-review',
         },
         {
-            'label': 'Rejected',
+            'label': 'Rechazados',
             'count': rejected_producers,
             'percent': _percentage(rejected_producers, producer_count),
             'status_class': 'status-rejected',
@@ -59,19 +59,19 @@ def dashboard(request):
 
     batch_status_summary = [
         {
-            'label': 'Compliant',
+            'label': 'Conformes',
             'count': compliant_batches,
             'percent': _percentage(compliant_batches, batch_count),
             'color': '#16a34a',
         },
         {
-            'label': 'Pending',
+            'label': 'Pendientes',
             'count': pending_batches,
             'percent': _percentage(pending_batches, batch_count),
             'color': '#eab308',
         },
         {
-            'label': 'Non-Compliant',
+            'label': 'No conformes',
             'count': non_compliant_batches,
             'percent': _percentage(non_compliant_batches, batch_count),
             'color': '#dc2626',
@@ -86,9 +86,9 @@ def dashboard(request):
         activity_events.append(
             {
                 'timestamp': producer.created_at,
-                'title': f"New producer onboarded: {producer.full_name}",
+                'title': f"Nuevo productor incorporado: {producer.full_name}",
                 'meta': producer.code,
-                'category': 'Producer',
+                'category': 'Productor',
             }
         )
 
@@ -96,9 +96,9 @@ def dashboard(request):
         activity_events.append(
             {
                 'timestamp': plot.created_at,
-                'title': f"Plot added: {plot.name}",
+                'title': f"Parcela agregada: {plot.name}",
                 'meta': plot.plot_code,
-                'category': 'Plot',
+                'category': 'Parcela',
             }
         )
 
@@ -106,9 +106,9 @@ def dashboard(request):
         activity_events.append(
             {
                 'timestamp': document.uploaded_at,
-                'title': f"Document uploaded for {document.producer.full_name}",
+                'title': f"Documento cargado para {document.producer.full_name}",
                 'meta': document.name,
-                'category': 'Document',
+                'category': 'Documento',
             }
         )
 
@@ -116,9 +116,9 @@ def dashboard(request):
         activity_events.append(
             {
                 'timestamp': batch.created_at,
-                'title': f"Batch registered: {batch.batch_id}",
+                'title': f"Lote registrado: {batch.batch_id}",
                 'meta': batch.producer.full_name,
-                'category': 'Inventory',
+                'category': 'Inventario',
             }
         )
 
@@ -127,24 +127,24 @@ def dashboard(request):
     context = {
         'metrics': [
             {
-                'label': 'Producers',
+                'label': 'Productores',
                 'value': producer_count,
-                'subtext': f"{approved_producers} approved",
+                'subtext': f"{approved_producers} aprobados",
             },
             {
-                'label': 'Plots',
+                'label': 'Parcelas',
                 'value': plot_count,
-                'subtext': f"{compliant_plots} compliant",
+                'subtext': f"{compliant_plots} conformes",
             },
             {
-                'label': 'Warehouses',
+                'label': 'Almacenes',
                 'value': warehouse_count,
-                'subtext': f"{warehouse_utilisation}% utilisation",
+                'subtext': f"{warehouse_utilisation}% de uso",
             },
             {
-                'label': 'Batches',
+                'label': 'Lotes',
                 'value': batch_count,
-                'subtext': f"{total_batch_weight} kg total",
+                'subtext': f"{total_batch_weight} kg totales",
             },
         ],
         'compliance_distribution': compliance_distribution,

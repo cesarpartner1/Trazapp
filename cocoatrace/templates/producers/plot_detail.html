@@ -5,29 +5,29 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Plot {{ plot.plot_code }}</p>
+            <p class="page-subtitle">Parcela {{ plot.plot_code }}</p>
             <h1 class="page-title">{{ plot.name }}</h1>
-            <p class="page-helper">Geolocated field boundary and agronomic stats for {{ producer.full_name }}.</p>
+            <p class="page-helper">Límite geolocalizado y datos agronómicos de {{ producer.full_name }}.</p>
         </div>
-        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Back to Producer</a>
+        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Volver al productor</a>
     </div>
 
     <div class="overview-grid">
         <div class="card">
-            <div class="card-header">Plot Summary</div>
+            <div class="card-header">Resumen de la parcela</div>
             <div class="card-body">
                 <dl class="data-grid">
                     <div>
-                        <dt>Plot ID</dt>
+                        <dt>ID de parcela</dt>
                         <dd>{{ plot.plot_code }}</dd>
                     </div>
                     <div>
-                        <dt>Area (ha)</dt>
+                        <dt>Área (ha)</dt>
                         <dd>{{ plot.area_hectares }}</dd>
                     </div>
                     <div>
-                        <dt>Created</dt>
-                        <dd>{{ plot.created_at|date:"M d, Y" }}</dd>
+                        <dt>Creada</dt>
+                        <dd>{{ plot.created_at|date:"d M Y" }}</dd>
                     </div>
                 </dl>
             </div>
@@ -39,10 +39,10 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fa-solid fa-map me-2"></i>
-                    Boundary Map
+                    Mapa del límite
                 </div>
                 {% if not plot_geojson %}
-                <span class="status-chip status-rejected">No geometry stored</span>
+                <span class="status-chip status-rejected">Sin geometría registrada</span>
                 {% endif %}
             </div>
             <div class="card-body">
@@ -84,7 +84,7 @@
             const notice = L.control({ position: 'topright' });
             notice.onAdd = function () {
                 const div = L.DomUtil.create('div', 'status-chip status-rejected');
-                div.textContent = 'No polygon saved';
+                div.textContent = 'No hay polígono guardado';
                 return div;
             };
             notice.addTo(map);
