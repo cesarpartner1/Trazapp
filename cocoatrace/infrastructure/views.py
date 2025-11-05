@@ -1,6 +1,8 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
+from core.models import ActivityLog
+from core.utils import log_activity
 from .forms import WarehouseForm
 from .models import Warehouse
 
@@ -21,7 +23,8 @@ def warehouse_create(request):
 
 	if request.method == 'POST':
 		if form.is_valid():
-			form.save()
+			warehouse = form.save()
+			log_activity('Almacén', f"Almacén registrado: {warehouse.name}", warehouse.code, event_type=ActivityLog.EVENT_CREATE)
 			messages.success(request, 'Almacén registrado correctamente.')
 			return redirect('warehouse_list')
 		messages.error(request, 'Soluciona los errores e intenta de nuevo.')
@@ -46,7 +49,8 @@ def warehouse_update(request, pk):
 
 	if request.method == 'POST':
 		if form.is_valid():
-			form.save()
+			warehouse = form.save()
+			log_activity('Almacén', f"Almacén actualizado: {warehouse.name}", warehouse.code, event_type=ActivityLog.EVENT_UPDATE)
 			messages.success(request, 'Almacén actualizado correctamente.')
 			return redirect('warehouse_list')
 		messages.error(request, 'Revisa la información e intenta nuevamente.')
@@ -71,7 +75,10 @@ def warehouse_delete(request, pk):
 	warehouse = get_object_or_404(Warehouse, pk=pk)
 
 	if request.method == 'POST':
+		name = warehouse.name
+		code = warehouse.code
 		warehouse.delete()
+		log_activity('Almacén', f"Almacén eliminado: {name}", code, event_type=ActivityLog.EVENT_DELETE)
 		messages.success(request, 'Almacén eliminado correctamente.')
 		return redirect('warehouse_list')
 

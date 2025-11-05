@@ -5,11 +5,11 @@
 <div class="container-fluid">
     <div class="page-heading">
         <div>
-            <p class="page-subtitle">Registro</p>
-            <h1 class="page-title">Nuevo productor</h1>
-            <p class="page-helper">Captura la identidad, los datos de contacto y la información de cumplimiento del productor siguiendo los pasos para mantener la calidad del dato.</p>
+            <p class="page-subtitle">{{ page_subtitle|default:"Registro" }}</p>
+            <h1 class="page-title">{{ page_title|default:"Productor" }}</h1>
+            <p class="page-helper">{{ page_helper|default:"Gestiona la información del productor." }}</p>
         </div>
-        <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+    <a href="{{ cancel_url|default:"#" }}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 
     {% if form.errors %}
@@ -115,7 +115,12 @@
             </div>
             <div class="card-footer d-flex justify-content-between">
                 <button type="button" class="btn btn-outline-secondary" data-prev>Volver</button>
-                <button type="submit" class="btn btn-primary">Crear productor</button>
+                <div class="d-flex gap-2">
+                    {% if delete_url %}
+                    <a href="{{ delete_url }}" class="btn btn-outline-danger">Eliminar productor</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">{{ submit_label|default:"Guardar" }}</button>
+                </div>
             </div>
         </div>
     </form>

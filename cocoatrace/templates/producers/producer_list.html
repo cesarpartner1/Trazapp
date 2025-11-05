@@ -46,6 +46,7 @@
                             <th scope="col">Ubicación</th>
                             <th scope="col">Parcelas</th>
                             <th scope="col">Cumplimiento</th>
+                            <th scope="col" class="text-end">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="producer-table-body">
@@ -65,10 +66,13 @@
                             <td>
                                 <span class="status-chip status-{{ producer.compliance_status|slugify }}">{{ producer.get_compliance_status_display }}</span>
                             </td>
+                            <td class="text-end">
+                                <a href="{% url 'edit_producer' producer.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-secondary">No se encontraron productores. Comienza creando un nuevo perfil.</td>
+                            <td colspan="6" class="text-center py-4 text-secondary">No se encontraron productores. Comienza creando un nuevo perfil.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

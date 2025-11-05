@@ -46,6 +46,16 @@ class PlotForm(forms.ModelForm):
             "area_hectares": forms.NumberInput(attrs={"class": "form-control", "step": "0.01"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = getattr(self, "instance", None)
+        if not self.is_bound and instance and instance.pk and instance.polygon:
+            initial_value = self.initial.get("polygon", instance.polygon)
+            if not isinstance(initial_value, str):
+                json_value = json.dumps(instance.polygon)
+                self.initial["polygon"] = json_value
+                self.fields["polygon"].initial = json_value
+
     def clean_polygon(self):
         raw_value = self.cleaned_data["polygon"]
         if not raw_value:

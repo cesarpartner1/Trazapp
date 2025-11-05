@@ -6,6 +6,8 @@ from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from core.models import ActivityLog
+from core.utils import log_activity
 from infrastructure.models import Warehouse
 from producers.models import Producer, Plot
 
@@ -25,6 +27,7 @@ def _recalculate_warehouse_stock(warehouse_id):
     )
     Warehouse.objects.filter(pk=warehouse_id).update(current_stock_kg=total)
 
+
 def batch_list(request):
     batches = Batch.objects.all()
     return render(request, 'inventory/batch_list.html', {'batches': batches})
@@ -40,7 +43,7 @@ def create_batch(request):
         else:
             warehouse_id = request.POST.get('warehouse_location') or None
             with transaction.atomic():
-                Batch.objects.create(
+                batch = Batch.objects.create(
                     producer=producer,
                     plot=plot,
                     batch_id=request.POST.get('batch_id'),
@@ -49,6 +52,7 @@ def create_batch(request):
                     eudr_compliance_status=request.POST.get('eudr_compliance_status'),
                 )
                 _recalculate_warehouse_stock(warehouse_id)
+            log_activity('Inventario', f"Lote registrado: {batch.batch_id}", batch.producer.full_name, event_type=ActivityLog.EVENT_CREATE)
             messages.success(request, 'Lote registrado correctamente.')
             return redirect('batch_list')
 
@@ -91,6 +95,7 @@ def edit_batch(request, pk):
                 _recalculate_warehouse_stock(previous_warehouse_id)
                 _recalculate_warehouse_stock(warehouse_id)
 
+            log_activity('Inventario', f"Lote actualizado: {batch.batch_id}", batch.producer.full_name, event_type=ActivityLog.EVENT_UPDATE)
             messages.success(request, 'Lote actualizado correctamente.')
             return redirect('batch_list')
 
@@ -112,8 +117,11 @@ def delete_batch(request, pk):
 
     if request.method == 'POST':
         warehouse_id = batch.warehouse_location_id
+        description = f"Lote eliminado: {batch.batch_id}"
+        meta = batch.producer.full_name
         batch.delete()
         _recalculate_warehouse_stock(warehouse_id)
+        log_activity('Inventario', description, meta, event_type=ActivityLog.EVENT_DELETE)
         messages.success(request, 'Lote eliminado correctamente.')
         return redirect('batch_list')
 

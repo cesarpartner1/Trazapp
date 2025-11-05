@@ -11,6 +11,8 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Volver a productores</a>
+            <a href="{% url 'edit_producer' producer.pk %}" class="btn btn-primary">Editar productor</a>
+            <a href="{% url 'delete_producer' producer.pk %}" class="btn btn-outline-danger">Eliminar productor</a>
             <span class="status-chip status-{{ producer.compliance_status|slugify }} align-self-center">{{ producer.get_compliance_status_display }}</span>
         </div>
     </div>
@@ -104,6 +106,7 @@
                                 <th scope="col">Identificador</th>
                                 <th scope="col">Área (ha)</th>
                                 <th scope="col">GeoJSON</th>
+                                <th scope="col" class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -122,10 +125,13 @@
                                     <span class="status-chip status-rejected">Sin geometría</span>
                                     {% endif %}
                                 </td>
+                                <td class="text-end">
+                                    <a href="{% url 'edit_plot' producer.pk plot.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-secondary">Aún no hay parcelas registradas.</td>
+                                <td colspan="5" class="text-center py-4 text-secondary">Aún no hay parcelas registradas.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

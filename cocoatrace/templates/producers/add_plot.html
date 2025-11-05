@@ -6,10 +6,10 @@
     <div class="page-heading">
         <div>
             <p class="page-subtitle">{{ producer.code }}</p>
-            <h1 class="page-title">Nueva parcela</h1>
-            <p class="page-helper">Dibuja el límite de la finca y captura los datos agronómicos clave.</p>
+            <h1 class="page-title">{{ page_title|default:"Nueva parcela" }}</h1>
+            <p class="page-helper">{{ page_helper|default:"Dibuja el límite de la finca y captura los datos agronómicos clave." }}</p>
         </div>
-        <a href="{% url 'producer_detail' producer.pk %}" class="btn btn-outline-secondary">Volver al perfil</a>
+        <a href="{{ cancel_url|default:'#' }}" class="btn btn-outline-secondary">Volver al perfil</a>
     </div>
 
     {% if form.errors %}
@@ -82,7 +82,7 @@
             </div>
             <div class="card-footer d-flex justify-content-between">
                 <button class="btn btn-outline-secondary" type="button" id="back-to-map">Regresar</button>
-                <button type="submit" class="btn btn-primary">Guardar parcela</button>
+                <button type="submit" class="btn btn-primary">{{ submit_label|default:"Guardar parcela" }}</button>
             </div>
         </form>
     </div>
@@ -188,6 +188,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         map.on(L.Draw.Event.DELETED, function () {
             setGeometry(null);
+        });
+
+        map.on(L.Draw.Event.EDITED, function (event) {
+            let updatedGeometry = null;
+            event.layers.eachLayer(function (layer) {
+                // Tomamos la primera geometría editada porque solo se permite un polígono activo.
+                if (!updatedGeometry) {
+                    updatedGeometry = layer.toGeoJSON().geometry;
+                }
+            });
+            if (updatedGeometry) {
+                setGeometry(updatedGeometry);
+            } else {
+                setGeometry(null);
+            }
         });
     }
 

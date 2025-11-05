@@ -3,9 +3,10 @@ from decimal import Decimal
 from django.db.models import Sum
 from django.shortcuts import render
 
+from core.models import ActivityLog
 from infrastructure.models import Warehouse
 from inventory.models import Batch
-from producers.models import Document, Plot, Producer
+from producers.models import Plot, Producer
 
 
 def _percentage(amount, total):
@@ -80,49 +81,16 @@ def dashboard(request):
 
     top_warehouses = Warehouse.objects.order_by('-current_stock_kg')[:5]
 
-    activity_events = []
-
-    for producer in Producer.objects.order_by('-created_at')[:5]:
-        activity_events.append(
-            {
-                'timestamp': producer.created_at,
-                'title': f"Nuevo productor incorporado: {producer.full_name}",
-                'meta': producer.code,
-                'category': 'Productor',
-            }
-        )
-
-    for plot in Plot.objects.order_by('-created_at')[:5]:
-        activity_events.append(
-            {
-                'timestamp': plot.created_at,
-                'title': f"Parcela agregada: {plot.name}",
-                'meta': plot.plot_code,
-                'category': 'Parcela',
-            }
-        )
-
-    for document in Document.objects.select_related('producer').order_by('-uploaded_at')[:5]:
-        activity_events.append(
-            {
-                'timestamp': document.uploaded_at,
-                'title': f"Documento cargado para {document.producer.full_name}",
-                'meta': document.name,
-                'category': 'Documento',
-            }
-        )
-
-    for batch in Batch.objects.select_related('producer').order_by('-created_at')[:5]:
-        activity_events.append(
-            {
-                'timestamp': batch.created_at,
-                'title': f"Lote registrado: {batch.batch_id}",
-                'meta': batch.producer.full_name,
-                'category': 'Inventario',
-            }
-        )
-
-    recent_activity = sorted(activity_events, key=lambda event: event['timestamp'], reverse=True)[:8]
+    recent_activity = [
+        {
+            'timestamp': log.created_at,
+            'title': log.title,
+            'meta': log.meta,
+            'category': log.category,
+            'event_type': log.event_type,
+        }
+        for log in ActivityLog.objects.all()[:8]
+    ]
 
     context = {
         'metrics': [
