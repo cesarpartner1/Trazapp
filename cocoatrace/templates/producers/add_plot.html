@@ -151,9 +151,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    function countVertices(geometry) {
+        if (!geometry || !geometry.coordinates) {
+            return 0;
+        }
+        if (geometry.type === 'Polygon') {
+            return geometry.coordinates.reduce((total, ring) => total + (ring?.length || 0), 0);
+        }
+        if (geometry.type === 'MultiPolygon') {
+            return geometry.coordinates.reduce((total, polygon) => {
+                return total + polygon.reduce((polyTotal, ring) => polyTotal + (ring?.length || 0), 0);
+            }, 0);
+        }
+        return 0;
+    }
+
     function updateGeometryDisplay(geometry) {
         if (geometry) {
-            const vertexCount = geometry.coordinates?.[0]?.length || 0;
+            const vertexCount = countVertices(geometry);
             geometryChip.textContent = `${geometry.type} • ${vertexCount} vértices`;
             geometryChip.classList.add('has-geometry');
         } else {
@@ -228,7 +243,35 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = function (uploadEvent) {
             try {
                 const data = JSON.parse(uploadEvent.target.result);
-                const geometry = data.type === 'Feature' ? data.geometry : data;
+                let geometry = null;
+
+                if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+                    const merged = [];
+                    data.features.forEach(feature => {
+                        const geom = feature?.geometry;
+                        if (!geom) {
+                            return;
+                        }
+                        if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
+                            merged.push(geom.coordinates);
+                        } else if (geom.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
+                            geom.coordinates.forEach(coords => merged.push(coords));
+                        }
+                    });
+
+                    if (!merged.length) {
+                        alert('La colección no contiene polígonos válidos. Asegúrate de incluir geometrías Polygon o MultiPolygon.');
+                        return;
+                    }
+
+                    geometry = merged.length === 1
+                        ? { type: 'Polygon', coordinates: merged[0] }
+                        : { type: 'MultiPolygon', coordinates: merged };
+                } else if (data.type === 'Feature') {
+                    geometry = data.geometry;
+                } else {
+                    geometry = data;
+                }
 
                 if (!geometry || (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon')) {
                     alert('Solo se admite GeoJSON de tipo Polygon o MultiPolygon.');
