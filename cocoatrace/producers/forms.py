@@ -18,6 +18,9 @@ class ProducerForm(forms.ModelForm):
             "address",
             "municipality",
             "department",
+            "sector",
+            "community",
+            "notes",
             "compliance_status",
         ]
         widgets = {
@@ -30,6 +33,9 @@ class ProducerForm(forms.ModelForm):
             "address": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
             "municipality": forms.TextInput(attrs={"class": "form-control"}),
             "department": forms.TextInput(attrs={"class": "form-control"}),
+            "sector": forms.TextInput(attrs={"class": "form-control"}),
+            "community": forms.TextInput(attrs={"class": "form-control"}),
+            "notes": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
             "compliance_status": forms.Select(attrs={"class": "form-select"}),
         }
 

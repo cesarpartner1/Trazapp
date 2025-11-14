@@ -8,7 +8,12 @@
             <h1 class="page-title">Panorama de trazabilidad</h1>
             <p class="page-helper">Supervisa en tiempo real la conformidad de productores, el alta de parcelas, los movimientos de inventario y el uso de los almacenes.</p>
         </div>
-        <a href="{% url 'producer_list' %}" class="btn btn-primary"><i class="fa-solid fa-user-plus me-2"></i>Nuevo productor</a>
+        <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center">
+            <a href="{% url 'surveys:import_geojson' %}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-file-import me-2"></i>Importar encuestas
+            </a>
+            <a href="{% url 'producer_list' %}" class="btn btn-primary"><i class="fa-solid fa-user-plus me-2"></i>Nuevo productor</a>
+        </div>
     </div>
 
     <div class="overview-grid">

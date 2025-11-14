@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "infrastructure",
     "compliance",
     "dashboard",
+    "surveys.apps.SurveysConfig",
 ]
 
 MIDDLEWARE = [

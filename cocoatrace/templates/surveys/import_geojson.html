@@ -1,0 +1,81 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">Importaciones</p>
+            <h1 class="page-title">Importar encuestas GeoJSON</h1>
+            <p class="page-helper">Sube un FeatureCollection para crear o actualizar productores, parcelas y encuestas en un solo paso.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+                <div class="col-12 col-md-8">
+                    {{ form.geojson_file.label_tag }}
+                    {{ form.geojson_file }}
+                    {% if form.geojson_file.help_text %}
+                    <div class="form-text">{{ form.geojson_file.help_text }}</div>
+                    {% endif %}
+                    {% for error in form.geojson_file.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12 col-md-4 align-self-end text-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-file-import me-2"></i>Cargar archivo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if summary %}
+    <div class="card mt-4">
+        <div class="card-header">
+            Resultados de la importación
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="metric-card">
+                        <span class="metric-label">Productores</span>
+                        <span class="metric-value text-success">+{{ summary.producers_created }}</span>
+                        <span class="metric-subvalue text-warning">{{ summary.producers_updated }} actualizados</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="metric-card">
+                        <span class="metric-label">Parcelas</span>
+                        <span class="metric-value text-success">+{{ summary.plots_created }}</span>
+                        <span class="metric-subvalue text-warning">{{ summary.plots_updated }} actualizadas</span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="metric-card">
+                        <span class="metric-label">Encuestas</span>
+                        <span class="metric-value text-success">+{{ summary.surveys_created }}</span>
+                        <span class="metric-subvalue text-warning">{{ summary.surveys_updated }} actualizadas</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if summary.errors %}
+            <div class="alert alert-warning mt-4" role="alert">
+                <h6 class="alert-heading">Se encontraron {{ summary.errors|length }} problemas:</h6>
+                <ul class="mb-0 small">
+                    {% for item in summary.errors %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

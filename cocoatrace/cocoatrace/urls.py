@@ -26,6 +26,7 @@ urlpatterns = [
     path("", include("producers.urls")),
     path("", include("inventory.urls")),
     path("", include("infrastructure.urls")),
+    path("", include("surveys.urls")),
 ]
 
 if settings.DEBUG:

@@ -113,9 +113,12 @@ class Producer(models.Model):
     # Contacto y ubicación
     phone = models.CharField(max_length=20)
     email = models.EmailField(blank=True)
-    address = models.TextField()
-    municipality = models.CharField(max_length=100)
-    department = models.CharField(max_length=100)
+    address = models.TextField(blank=True)
+    municipality = models.CharField(max_length=100, blank=True)
+    department = models.CharField(max_length=100, blank=True)
+    sector = models.CharField(max_length=100, blank=True)
+    community = models.CharField(max_length=100, blank=True)
+    notes = models.TextField(blank=True)
 
     # Compliance
     compliance_status = models.CharField(
@@ -138,7 +141,9 @@ class Plot(models.Model):
     producer = models.ForeignKey(Producer, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     plot_code = models.CharField(max_length=50, unique=True)
+    global_id = models.CharField(max_length=64, unique=True, null=True, blank=True)
     area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
+    reported_area_ha = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
     # Geolocalización
     polygon = models.JSONField(
