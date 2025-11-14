@@ -14,3 +14,7 @@ class Batch(models.Model):
     producer = models.ForeignKey(Producer, on_delete=models.PROTECT)
     plot = models.ForeignKey(Plot, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        producer_code = getattr(self.producer, "code", "?")
+        return f"{self.batch_id} · {producer_code} ({self.quantity} kg)"

@@ -130,12 +130,19 @@ class Producer(models.Model):
     # Auditoría
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        readable_code = self.code or "SIN-CODIGO"
+        return f"{readable_code} · {self.full_name}".strip()
 
 class Document(models.Model):
     producer = models.ForeignKey(Producer, on_delete=models.CASCADE, related_name='documents')
     name = models.CharField(max_length=200)
     file = models.FileField(upload_to='documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} ({self.producer.code})"
 
 class Plot(models.Model):
     producer = models.ForeignKey(Producer, on_delete=models.CASCADE)
@@ -160,6 +167,10 @@ class Plot(models.Model):
     eudr_compliant = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        readable_code = self.plot_code or self.global_id or "SIN-CODIGO"
+        return f"{readable_code} · {self.name}".strip()
 
     def save(self, *args, **kwargs):
         centroid = compute_centroid(self.polygon) if self.polygon else None

@@ -1,0 +1,196 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">{{ object.reference_code }}</p>
+            <h1 class="page-title">{{ object.name }}</h1>
+            <p class="page-helper">Seguimiento documental y productores vinculados.</p>
+        </div>
+        <a href="{% url 'eudr:diligence_list' %}" class="btn btn-outline-secondary">Volver al dashboard</a>
+    </div>
+
+    <div class="overview-grid">
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title">Estado</p>
+                <p class="metric-value">{{ object.get_status_display }}</p>
+                <p class="table-meta">Apertura {{ object.opened_at|date:"d M Y" }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title">Productores</p>
+                <p class="metric-value">{{ object.producers.count }}</p>
+                <p class="table-meta">Enlazados a la diligencia</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title">Eventos</p>
+                <p class="metric-value">{{ object.timeline_entries.count }}</p>
+                <p class="table-meta">Documentos y notas</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-flow">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                    Línea de tiempo
+                </div>
+            </div>
+            <div class="card-body">
+                {% if timeline %}
+                <ul class="timeline mb-0">
+                    {% for entry in timeline %}
+                    <li class="timeline-item">
+                        <div class="timeline-marker timeline-marker--{{ entry.event_type }}"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ entry.get_event_type_display }}</strong>
+                                <span class="table-meta">{{ entry.event_date|date:"d M Y" }}</span>
+                            </div>
+                            <p class="table-meta mb-1">Estado: {{ entry.get_status_display }}</p>
+                            {% if entry.batch %}
+                                <p class="table-meta mb-1">Lote asociado: {{ entry.batch.batch_id }} · {{ entry.batch.quantity }} kg</p>
+                            {% endif %}
+                            {% if entry.title %}<p class="mb-1"><strong>{{ entry.title }}</strong></p>{% endif %}
+                            <p class="mb-1">{{ entry.description|default:"Sin descripción" }}</p>
+                            {% if entry.documents.all %}
+                                <div class="timeline-documents">
+                                    {% for document in entry.documents.all %}
+                                        <a href="{{ document.file.url }}" class="badge text-bg-primary" target="_blank" rel="noopener">
+                                            <i class="fa-solid fa-file-arrow-down me-1"></i>{{ document.original_name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-secondary mb-0">Aún no hay eventos registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Agregar evento / documento</div>
+            <form method="post" action="{% url 'eudr:timeline_create' object.public_id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de evento</label>
+                            {{ timeline_form.event_type }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            {{ timeline_form.status }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Título</label>
+                            {{ timeline_form.title }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha</label>
+                            {{ timeline_form.event_date }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            {{ timeline_form.description }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lote asociado</label>
+                            {{ timeline_form.batch }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Archivo adjunto</label>
+                            {{ timeline_form.document_file }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notas del documento</label>
+                            {{ timeline_form.document_notes }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-primary">Agregar al timeline</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Vincular productores</div>
+            <form method="post" action="{% url 'eudr:attach_producers' object.public_id %}">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Productores</label>
+                            {{ attach_form.producers }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rol</label>
+                            {{ attach_form.role }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Notas</label>
+                            {{ attach_form.notes }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-outline-primary">Agregar productores</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+}
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--border-color);
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+.timeline-marker {
+    position: absolute;
+    left: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--button-background);
+    border: 2px solid var(--background-primary);
+}
+.timeline-content {
+    margin-left: 2rem;
+}
+.timeline-marker--delivery_note { background-color: #2563eb; }
+.timeline-marker--reception_note { background-color: #10b981; }
+.timeline-marker--sales_invoice { background-color: #f97316; }
+.timeline-marker--due_diligence { background-color: #6366f1; }
+.timeline-marker--custom { background-color: #94a3b8; }
+.timeline-documents .badge {
+    margin-right: 0.5rem;
+}
+</style>
+{% endblock %}

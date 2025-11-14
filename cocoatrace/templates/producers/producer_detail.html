@@ -67,6 +67,7 @@
 
     <div class="tabs" role="tablist">
         <button class="tabs-link active" data-target="plots-panel" role="tab">Parcelas</button>
+        <button class="tabs-link" data-target="surveys-panel" role="tab">Encuestas</button>
         <button class="tabs-link" data-target="documents-panel" role="tab">Documentos</button>
     </div>
 
@@ -132,6 +133,64 @@
                             {% empty %}
                             <tr>
                                 <td colspan="5" class="text-center py-4 text-secondary">Aún no hay parcelas registradas.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tabs-panel" id="surveys-panel" role="tabpanel">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-clipboard-list me-2"></i>
+                    Encuestas de campo
+                </div>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'surveys:survey_list' %}?q={{ producer.code }}" target="_blank">
+                    Ver todas
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Global ID</th>
+                                <th scope="col">Parcela</th>
+                                <th scope="col">Fecha censo</th>
+                                <th scope="col">Enumerador</th>
+                                <th scope="col">Área reportada (ha)</th>
+                                <th scope="col">Riesgo</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for survey in producer.surveys.all|slice:":5" %}
+                            <tr>
+                                <td><a class="table-link" href="{% url 'surveys:survey_detail' survey.pk %}?next={{ request.path|urlencode }}">{{ survey.global_id }}</a></td>
+                                <td>{{ survey.plot.name }}</td>
+                                <td>{{ survey.census_date|date:"d M Y" }}</td>
+                                <td>{{ survey.enumerator|default:"-" }}</td>
+                                <td>{{ survey.reported_area_ha|default:"-" }}</td>
+                                <td>
+                                    {% if survey.risk_eudr %}
+                                    <span class="status-chip">{{ survey.risk_eudr }}</span>
+                                    {% else %}
+                                    <span class="table-meta">Sin dato</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'surveys:survey_detail' survey.pk %}?next={{ request.path|urlencode }}">
+                                        Ver respuestas
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-secondary">Aún no hay encuestas asociadas a este productor.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

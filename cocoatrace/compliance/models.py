@@ -9,6 +9,9 @@ class EUDRStatusHistory(models.Model):
     changed_by = models.ForeignKey('infrastructure.Personnel', on_delete=models.PROTECT)
     changed_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.producer.code} · {self.previous_status}→{self.new_status} ({self.changed_at:%Y-%m-%d})"
+
 class DueDiligenceStatement(models.Model):
     """Declaración de Diligencia Debida EUDR"""
     statement_id = models.CharField(max_length=100, unique=True)
@@ -29,3 +32,6 @@ class DueDiligenceStatement(models.Model):
         max_length=20,
         choices=[('draft', 'Borrador'), ('submitted', 'Presentado'), ('approved', 'Aprobado')]
     )
+
+    def __str__(self):
+        return f"Declaración {self.statement_id} ({self.get_status_display()})"

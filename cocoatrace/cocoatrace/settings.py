@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "compliance",
     "dashboard",
     "surveys.apps.SurveysConfig",
+    "eudr.apps.EudrConfig",
 ]
 
 MIDDLEWARE = [

@@ -27,6 +27,8 @@ urlpatterns = [
     path("", include("inventory.urls")),
     path("", include("infrastructure.urls")),
     path("", include("surveys.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("eudr/", include("eudr.urls")),
 ]
 
 if settings.DEBUG:

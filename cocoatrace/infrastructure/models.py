@@ -15,6 +15,10 @@ class Personnel(AbstractUser):
     phone = models.CharField(max_length=20)
     is_active_employee = models.BooleanField(default=True)
 
+    def __str__(self):
+        display_name = self.get_full_name() or self.username
+        return f"{self.employee_id} · {display_name}" if self.employee_id else display_name
+
 class Warehouse(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=200)
@@ -29,8 +33,14 @@ class Warehouse(models.Model):
 
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{self.code} · {self.name}"
+
 class Vehicle(models.Model):
     plate_number = models.CharField(max_length=20, unique=True)
     vehicle_type = models.CharField(max_length=50)
     capacity_kg = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.plate_number} · {self.vehicle_type}"

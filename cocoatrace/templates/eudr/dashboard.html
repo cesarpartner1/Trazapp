@@ -1,0 +1,93 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">EUDR</p>
+            <h1 class="page-title">Diligencias de debida diligencia</h1>
+            <p class="page-helper">Supervisa el avance documental y los hitos clave para cada diligencia asociada a exportaciones.</p>
+        </div>
+        <a href="{% url 'eudr:diligence_create' %}" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-2"></i>Nueva diligencia
+        </a>
+    </div>
+
+    <div class="overview-grid">
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title">Diligencias activas</p>
+                <p class="metric-value">{{ active_count }}</p>
+                <p class="table-meta">En curso actualmente</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p class="metric-title">Documentos pendientes</p>
+                <p class="metric-value">{{ pending_docs }}</p>
+                <p class="table-meta">Eventos en estado pendiente</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <p clas="metric-title">Documentos totales</p>
+                <p class="metric-value">{{ total_documents }}</p>
+                <p class="table-meta">Últimos 12 meses</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-solid fa-diagram-project me-2"></i>
+                Línea de tiempo por diligencia
+            </div>
+            <span class="table-meta">{{ diligences|length }} diligencias</span>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Referencia</th>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Productores</th>
+                        <th>Apertura</th>
+                        <th>Última actividad</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for diligence in diligences %}
+                    <tr>
+                        <td><span class="badge text-bg-secondary">{{ diligence.reference_code }}</span></td>
+                        <td>{{ diligence.name }}</td>
+                        <td><span class="status-chip status-{{ diligence.status }}">{{ diligence.get_status_display }}</span></td>
+                        <td>{{ diligence.producers.count }}</td>
+                        <td>{{ diligence.opened_at|date:"d M Y" }}</td>
+                        <td>
+                            {% with entry=diligence.timeline_entries.first %}
+                                {% if entry %}
+                                    {{ entry.event_date|date:"d M Y" }}
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'eudr:diligence_detail' diligence.public_id %}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-secondary">Todavía no hay diligencias registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

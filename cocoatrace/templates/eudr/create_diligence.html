@@ -1,0 +1,60 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">EUDR</p>
+            <h1 class="page-title">Nueva diligencia</h1>
+            <p class="page-helper">Configura la diligencia, enlaza productores y empieza a subir la evidencia documental.</p>
+        </div>
+        <a href="{% url 'eudr:diligence_list' %}" class="btn btn-outline-secondary">Volver al dashboard</a>
+    </div>
+
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_name">Nombre</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="id_reference_code">Código de referencia</label>
+                        {{ form.reference_code }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="id_target_market">Mercado destino</label>
+                        {{ form.target_market }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Descripción</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de apertura</label>
+                        {{ form.opened_at }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fecha de cierre</label>
+                        {{ form.closed_at }}
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label">Productores involucrados</label>
+                        {{ form.producers }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <a href="{% url 'eudr:diligence_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Crear diligencia</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

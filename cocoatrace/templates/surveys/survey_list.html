@@ -1,0 +1,95 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-heading">
+        <div>
+            <p class="page-subtitle">Encuestas</p>
+            <h1 class="page-title">Listado de encuestas de campo</h1>
+            <p class="page-helper">Consulta los registros importados por productor, parcela y fecha de censo.</p>
+        </div>
+        <div class="d-flex gap-2 flex-column flex-md-row">
+            <a href="{% url 'surveys:import_geojson' %}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-file-import me-2"></i>Importar GeoJSON
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="survey-search" class="form-label">Buscar</label>
+                    <input type="text" id="survey-search" name="q" value="{{ query }}" class="form-control" placeholder="Filtra por productor, parcela o ID global" />
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Buscar
+                    </button>
+                </div>
+                <div class="col-md-3 text-md-end">
+                    <span class="table-meta">{{ total_count }} encuestas</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID Global</th>
+                        <th>Productor</th>
+                        <th>Parcela</th>
+                        <th>Fecha censo</th>
+                        <th>Enumerator</th>
+                        <th>Área reportada (ha)</th>
+                        <th>Riesgo EUDR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for survey in surveys %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'surveys:survey_detail' survey.pk %}" class="table-link">{{ survey.global_id }}</a>
+                        </td>
+                        <td>{{ survey.producer.full_name }}<br><span class="table-meta">{{ survey.producer.code }}</span></td>
+                        <td>{{ survey.plot.name }}</td>
+                        <td>{{ survey.census_date|date:"d M Y" }}</td>
+                        <td>{{ survey.enumerator }}</td>
+                        <td>{{ survey.reported_area_ha|default:"-" }}</td>
+                        <td>
+                            {% if survey.risk_eudr %}
+                                <span class="status-chip">{{ survey.risk_eudr }}</span>
+                            {% else %}
+                                <span class="table-meta">Sin dato</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-secondary">
+                            Aún no hay encuestas cargadas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <span class="table-meta">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            <div class="btn-group">
+                {% if page_obj.has_previous %}
+                <a class="btn btn-outline-secondary" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a class="btn btn-outline-secondary" href="?q={{ query }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
