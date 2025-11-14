@@ -56,6 +56,7 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/maps/baseLayers.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -65,9 +66,9 @@
             .map((value) => parseFloat(value));
 
         const map = L.map(container).setView([defaultLat, defaultLng], 8);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        const layerSetup = window.TrazappMaps && window.TrazappMaps.applyDefaultLayers
+            ? window.TrazappMaps.applyDefaultLayers(map)
+            : { baseLayers: {}, overlayLayers: {}, control: null };
 
         const geojsonData = {{ plot_geojson|safe|default:'null' }};
 
