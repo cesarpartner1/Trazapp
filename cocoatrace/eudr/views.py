@@ -57,9 +57,19 @@ class DiligenceDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.setdefault("timeline_form", EudrTimelineEntryForm())
-        context.setdefault("attach_form", EudrAttachProducerForm())
-        context["timeline"] = self.object.timeline_entries.select_related("batch", "created_by").prefetch_related("documents")
+        attach_form = context.setdefault("attach_form", EudrAttachProducerForm())
+        context["timeline"] = (
+            self.object.timeline_entries.select_related("batch", "created_by")
+            .prefetch_related("documents")
+            .order_by("event_date", "created_at")
+        )
         context["documents"] = self.object.documents.select_related("uploaded_by", "timeline_entry")[:10]
+        context["participants"] = (
+            self.object.eudrdiligenceproducer_set.select_related("producer")
+            .order_by("producer__full_name")
+        )
+        context["available_producers"] = attach_form.fields["producers"].queryset.order_by("full_name")
+        context["producer_field_name"] = attach_form["producers"].html_name
         return context
 
 
@@ -121,4 +131,13 @@ class AttachProducerView(LoginRequiredMixin, View):
             messages.success(request, "Productores agregados a la diligencia.")
         else:
             messages.error(request, "No fue posible agregar los productores seleccionados.")
+        return redirect("eudr:diligence_detail", public_id=public_id)
+
+
+class DetachProducerView(LoginRequiredMixin, View):
+    def post(self, request, public_id, pk):
+        diligence = get_object_or_404(EudrDiligence, public_id=public_id)
+        participant = get_object_or_404(EudrDiligenceProducer, pk=pk, diligence=diligence)
+        participant.delete()
+        messages.info(request, f"{participant.producer} fue removido de la diligencia.")
         return redirect("eudr:diligence_detail", public_id=public_id)

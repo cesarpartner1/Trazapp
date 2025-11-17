@@ -46,34 +46,52 @@
             </div>
             <div class="card-body">
                 {% if timeline %}
-                <ul class="timeline mb-0">
-                    {% for entry in timeline %}
-                    <li class="timeline-item">
-                        <div class="timeline-marker timeline-marker--{{ entry.event_type }}"></div>
-                        <div class="timeline-content">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{ entry.get_event_type_display }}</strong>
-                                <span class="table-meta">{{ entry.event_date|date:"d M Y" }}</span>
-                            </div>
-                            <p class="table-meta mb-1">Estado: {{ entry.get_status_display }}</p>
-                            {% if entry.batch %}
-                                <p class="table-meta mb-1">Lote asociado: {{ entry.batch.batch_id }} · {{ entry.batch.quantity }} kg</p>
-                            {% endif %}
-                            {% if entry.title %}<p class="mb-1"><strong>{{ entry.title }}</strong></p>{% endif %}
-                            <p class="mb-1">{{ entry.description|default:"Sin descripción" }}</p>
+                <div class="timeline-board">
+                    <div class="timeline-rail" role="list">
+                        {% for entry in timeline %}
+                        <button type="button"
+                                class="timeline-dot {% if forloop.first %}is-active{% endif %} timeline-dot--{{ entry.event_type }}"
+                                data-timeline-dot
+                                data-target="timeline-detail-{{ entry.id }}"
+                                aria-controls="timeline-detail-{{ entry.id }}"
+                                aria-label="{{ entry.event_date|date:'d M Y' }} · {{ entry.get_event_type_display }}">
+                            <span class="timeline-dot__date">{{ entry.event_date|date:"d M" }}</span>
+                            <span class="timeline-dot__label">{{ entry.get_event_type_display }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <div class="timeline-details">
+                        {% for entry in timeline %}
+                        <article id="timeline-detail-{{ entry.id }}" class="timeline-detail{% if forloop.first %} is-active{% endif %}" data-event-type="{{ entry.event_type }}">
+                            <header class="timeline-detail__header">
+                                <div>
+                                    <p class="timeline-detail__eyebrow">{{ entry.event_date|date:"d \d\e F Y" }}</p>
+                                    <h3 class="timeline-detail__title">{{ entry.title|default:entry.get_event_type_display }}</h3>
+                                </div>
+                                <span class="badge bg-secondary">{{ entry.get_status_display }}</span>
+                            </header>
+                            <ul class="timeline-detail__meta">
+                                <li><strong>Tipo:</strong> {{ entry.get_event_type_display }}</li>
+                                {% if entry.created_by %}<li><strong>Creado por:</strong> {{ entry.created_by.get_full_name|default:entry.created_by.username }}</li>{% endif %}
+                                {% if entry.batch %}<li><strong>Lote:</strong> {{ entry.batch.batch_id }} · {{ entry.batch.quantity }} kg</li>{% endif %}
+                            </ul>
+                            <p class="timeline-detail__description">{{ entry.description|default:"Sin descripción" }}</p>
                             {% if entry.documents.all %}
+                            <div class="timeline-detail__documents">
+                                <p class="timeline-detail__label">Documentos</p>
                                 <div class="timeline-documents">
                                     {% for document in entry.documents.all %}
-                                        <a href="{{ document.file.url }}" class="badge text-bg-primary" target="_blank" rel="noopener">
-                                            <i class="fa-solid fa-file-arrow-down me-1"></i>{{ document.original_name }}
-                                        </a>
+                                    <a href="{{ document.file.url }}" class="badge text-bg-primary" target="_blank" rel="noopener">
+                                        <i class="fa-solid fa-file-arrow-down me-1"></i>{{ document.original_name }}
+                                    </a>
                                     {% endfor %}
                                 </div>
+                            </div>
                             {% endif %}
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+                        </article>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% else %}
                 <p class="text-secondary mb-0">Aún no hay eventos registrados.</p>
                 {% endif %}
@@ -127,70 +145,338 @@
         </div>
 
         <div class="card">
-            <div class="card-header">Vincular productores</div>
-            <form method="post" action="{% url 'eudr:attach_producers' object.public_id %}">
-                {% csrf_token %}
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label">Productores</label>
-                            {{ attach_form.producers }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Rol</label>
-                            {{ attach_form.role }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Notas</label>
-                            {{ attach_form.notes }}
-                        </div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fa-solid fa-people-group me-2"></i> Productores involucrados
+                </div>
+                <span class="badge text-bg-light">{{ participants|length }} vinculados</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <form method="post" action="{% url 'eudr:attach_producers' object.public_id %}" class="producer-form">
+                            {% csrf_token %}
+                            <p class="text-muted small mb-3">Selecciona uno o varios productores y define su rol antes de agregar.</p>
+                            {% with selected_values=attach_form.producers.value %}
+                            <div class="producer-picker" data-producer-picker>
+                                {% if available_producers %}
+                                    {% for producer in available_producers %}
+                                        {% with value=producer.pk|stringformat:"s" %}
+                                        <label class="producer-option" data-producer-option>
+                                            <input type="checkbox"
+                                                   class="producer-option__input"
+                                                   name="{{ producer_field_name }}"
+                                                   value="{{ value }}"
+                                                   {% if selected_values and value in selected_values %}checked{% endif %}>
+                                            <span class="producer-option__body">
+                                                <span class="producer-option__title">{{ producer.full_name }}</span>
+                                                <span class="producer-option__meta">{{ producer.code }} · {{ producer.community|default:producer.municipality|default:"Sin ubicación" }}</span>
+                                            </span>
+                                        </label>
+                                        {% endwith %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-secondary">No hay productores disponibles.</p>
+                                {% endif %}
+                            </div>
+                            {% endwith %}
+                            {% if attach_form.producers.errors %}
+                                <div class="text-danger small mt-2">{{ attach_form.producers.errors }}</div>
+                            {% endif %}
+                            <div class="row g-3 mt-1">
+                                <div class="col-12">
+                                    <label class="form-label">Rol</label>
+                                    {{ attach_form.role }}
+                                    {% if attach_form.role.errors %}<div class="text-danger small mt-1">{{ attach_form.role.errors }}</div>{% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Notas</label>
+                                    {{ attach_form.notes }}
+                                    {% if attach_form.notes.errors %}<div class="text-danger small mt-1">{{ attach_form.notes.errors }}</div>{% endif %}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary w-100 mt-3">
+                                <i class="fa-solid fa-user-plus me-2"></i>Agregar seleccionados
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-lg-6">
+                        <p class="text-muted small">Actualmente vinculados</p>
+                        {% if participants %}
+                        <ul class="participant-list list-unstyled mb-0">
+                            {% for participant in participants %}
+                            <li class="participant-card">
+                                <div>
+                                    <p class="participant-card__name">{{ participant.producer.full_name }}</p>
+                                    <p class="participant-card__meta">{{ participant.producer.code }} · Rol: {{ participant.get_role_display }}</p>
+                                    {% if participant.notes %}<p class="participant-card__notes">{{ participant.notes }}</p>{% endif %}
+                                    <p class="participant-card__meta">Añadido el {{ participant.added_at|date:"d M Y" }}</p>
+                                </div>
+                                <form method="post" action="{% url 'eudr:detach_producer' object.public_id participant.pk %}" onsubmit="return confirm('¿Quitar este productor de la diligencia?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link text-danger p-0">
+                                        <i class="fa-solid fa-user-xmark me-1"></i>Quitar
+                                    </button>
+                                </form>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p class="text-secondary mb-0">Aún no hay productores vinculados.</p>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="card-footer text-end">
-                    <button type="submit" class="btn btn-outline-primary">Agregar productores</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-.timeline {
-    position: relative;
-    padding-left: 1.5rem;
+.timeline-board {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
-.timeline::before {
+
+.timeline-rail {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-rail::after {
     content: "";
     position: absolute;
-    left: 12px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: var(--border-color);
+    left: 0;
+    right: 0;
+    bottom: 0.35rem;
+    height: 2px;
+    background: var(--border-color);
 }
-.timeline-item {
+
+.timeline-dot {
     position: relative;
-    margin-bottom: 1.5rem;
+    border: none;
+    background: none;
+    text-align: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-width: 90px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
 }
-.timeline-marker {
+
+.timeline-dot::before {
+    content: "";
     position: absolute;
-    left: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -0.35rem;
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background-color: var(--button-background);
-    border: 2px solid var(--background-primary);
+    border: 3px solid var(--background-primary);
+    background: var(--border-color);
+    transition: transform 0.2s ease, background 0.2s ease;
 }
-.timeline-content {
-    margin-left: 2rem;
+
+.timeline-dot.is-active {
+    color: var(--text-primary);
+    font-weight: 600;
 }
-.timeline-marker--delivery_note { background-color: #2563eb; }
-.timeline-marker--reception_note { background-color: #10b981; }
-.timeline-marker--sales_invoice { background-color: #f97316; }
-.timeline-marker--due_diligence { background-color: #6366f1; }
-.timeline-marker--custom { background-color: #94a3b8; }
+
+.timeline-dot.is-active::before {
+    transform: translateX(-50%) scale(1.1);
+    background: var(--timeline-color, var(--button-background));
+}
+
+.timeline-dot__date {
+    display: block;
+    font-weight: 600;
+}
+
+.timeline-dot--delivery_note { --timeline-color: #2563eb; }
+.timeline-dot--reception_note { --timeline-color: #10b981; }
+.timeline-dot--sales_invoice { --timeline-color: #f97316; }
+.timeline-dot--due_diligence { --timeline-color: #6366f1; }
+.timeline-dot--custom { --timeline-color: #94a3b8; }
+
+.timeline-details {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.timeline-detail {
+    display: none;
+}
+
+.timeline-detail.is-active {
+    display: block;
+}
+
+.timeline-detail__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.timeline-detail__eyebrow {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.timeline-detail__title {
+    margin: 0;
+}
+
+.timeline-detail__meta {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.timeline-detail__description {
+    margin-bottom: 1rem;
+}
+
+.timeline-detail__documents {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.timeline-detail__label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
 .timeline-documents .badge {
     margin-right: 0.5rem;
 }
+
+.producer-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.producer-option {
+    display: flex;
+    gap: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.65rem;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--background-primary);
+}
+
+.producer-option:is(:hover, .is-selected) {
+    border-color: var(--button-background);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.producer-option__input {
+    margin-top: 0.3rem;
+}
+
+.producer-option__body {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.producer-option__title {
+    font-weight: 600;
+}
+
+.producer-option__meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.participant-list {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.participant-card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.participant-card__name {
+    margin: 0;
+    font-weight: 600;
+}
+
+.participant-card__meta {
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.participant-card__notes {
+    margin-bottom: 0.25rem;
+}
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dots = document.querySelectorAll('[data-timeline-dot]');
+    const panels = document.querySelectorAll('.timeline-detail');
+
+    if (!dots.length || !panels.length) {
+        return;
+    }
+
+    const activate = (targetId) => {
+        panels.forEach((panel) => {
+            panel.classList.toggle('is-active', panel.id === targetId);
+        });
+        dots.forEach((dot) => {
+            dot.classList.toggle('is-active', dot.dataset.target === targetId);
+        });
+    };
+
+    dots.forEach((dot) => {
+        dot.addEventListener('click', () => activate(dot.dataset.target));
+    });
+
+    activate(dots[0].dataset.target);
+
+    const producerOptions = document.querySelectorAll('[data-producer-option]');
+    producerOptions.forEach((option) => {
+        const checkbox = option.querySelector('input[type="checkbox"]');
+        if (!checkbox) {
+            return;
+        }
+        const sync = () => option.classList.toggle('is-selected', checkbox.checked);
+        checkbox.addEventListener('change', sync);
+        sync();
+    });
+});
+</script>
 {% endblock %}
