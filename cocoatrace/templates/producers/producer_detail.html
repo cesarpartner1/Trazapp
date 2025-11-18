@@ -11,6 +11,9 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{% url 'producer_list' %}" class="btn btn-outline-secondary">Volver a productores</a>
+            <a href="{% url 'producer_dossier' producer.pk %}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-file-pdf me-1"></i>Descargar dossier
+            </a>
             <a href="{% url 'edit_producer' producer.pk %}" class="btn btn-primary">Editar productor</a>
             <a href="{% url 'delete_producer' producer.pk %}" class="btn btn-outline-danger">Eliminar productor</a>
             <span class="status-chip status-{{ producer.compliance_status|slugify }} align-self-center">{{ producer.get_compliance_status_display }}</span>

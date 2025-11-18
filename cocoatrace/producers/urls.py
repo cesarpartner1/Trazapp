@@ -7,6 +7,7 @@ urlpatterns = [
     path('producers/<int:pk>/editar/', views.edit_producer, name='edit_producer'),
     path('producers/<int:pk>/eliminar/', views.delete_producer, name='delete_producer'),
     path('producers/<int:pk>/', views.producer_detail, name='producer_detail'),
+    path('producers/<int:pk>/dossier/', views.producer_dossier, name='producer_dossier'),
     path('producers/<int:producer_pk>/add_plot/', views.add_plot, name='add_plot'),
     path('producers/<int:producer_pk>/plots/<int:plot_pk>/editar/', views.edit_plot, name='edit_plot'),
     path('producers/<int:producer_pk>/plots/<int:plot_pk>/', views.plot_detail, name='plot_detail'),

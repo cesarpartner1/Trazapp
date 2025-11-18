@@ -1,11 +1,15 @@
 import json
 
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.text import slugify
 
 from core.models import ActivityLog
 from core.utils import log_activity
+from reports.producer_dossier import build_producer_dossier
+
 from .forms import DocumentForm, PlotForm, ProducerForm
 from .models import Document, Plot, Producer
 
@@ -63,6 +67,16 @@ def producer_detail(request, pk):
             'plot_features': plot_features,
         },
     )
+
+
+def producer_dossier(request, pk):
+    producer = get_object_or_404(Producer, pk=pk)
+    pdf_bytes = build_producer_dossier(producer)
+    slug = slugify(producer.code or producer.full_name)
+    filename = f"dossier-{slug or 'productor'}.pdf"
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 def add_plot(request, producer_pk):
